@@ -1,0 +1,265 @@
+class Array:
+    def __init__(self, data):
+        if not isinstance(data, list):
+            raise TypeError("Data must be a list")
+        
+        if not data:
+            self._data = []
+            self._shape = (0,)
+            return
+        
+        # Check if it's a nested list and validate shape consistency
+        self._shape = self._get_shape(data)
+        self._data = self._flatten(data)
+        
+        # Validate that the data is not ragged
+        expected_size = 1
+        for dim in self._shape:
+            expected_size *= dim
+        
+        if len(self._data) != expected_size:
+            raise ValueError("Input data is ragged (inconsistent dimensions)")
+    
+    def _get_shape(self, data):
+        shape = []
+        current = data
+        
+        while isinstance(current, list):
+            if not current:
+                break
+            shape.append(len(current))
+            current = current[0]
+        
+        return tuple(shape)
+    
+    def _flatten(self, data):
+        if not isinstance(data, list):
+            return [data]
+        
+        result = []
+        for item in data:
+            if isinstance(item, list):
+                result.extend(self._flatten(item))
+            else:
+                result.append(item)
+        
+        return result
+    
+    def _validate_shape_consistency(self, data, expected_shape, current_dim=0):
+        if current_dim >= len(expected_shape):
+            return not isinstance(data, list)
+        
+        if not isinstance(data, list) or len(data) != expected_shape[current_dim]:
+            return False
+        
+        for item in data:
+            if not self._validate_shape_consistency(item, expected_shape, current_dim + 1):
+                return False
+        
+        return True
+    
+    @property
+    def shape(self):
+        return self._shape
+    
+    def __getitem__(self, key):
+        if isinstance(key, tuple):
+            if len(key) != len(self._shape):
+                raise IndexError("Number of indices must match number of dimensions")
+            
+            # Convert multi-dimensional index to flat index
+            flat_index = 0
+            multiplier = 1
+            
+            for i in range(len(self._shape) - 1, -1, -1):
+                if key[i] < 0 or key[i] >= self._shape[i]:
+                    raise IndexError("Index out of bounds")
+                flat_index += key[i] * multiplier
+                multiplier *= self._shape[i]
+            
+            return self._data[flat_index]
+        else:
+            # Single index
+            if len(self._shape) == 1:
+                return self._data[key]
+            else:
+                # Return a sub-array
+                if key < 0 or key >= self._shape[0]:
+                    raise IndexError("Index out of bounds")
+                
+                sub_size = len(self._data) // self._shape[0]
+                start_idx = key * sub_size
+                end_idx = start_idx + sub_size
+                
+                sub_data = self._data[start_idx:end_idx]
+                sub_shape = self._shape[1:]
+                
+                # Create new Array with sub-data
+                new_array = Array([])
+                new_array._data = sub_data
+                new_array._shape = sub_shape
+                
+                return new_array
+    
+    def __setitem__(self, key, value):
+        if isinstance(key, tuple):
+            if len(key) != len(self._shape):
+                raise IndexError("Number of indices must match number of dimensions")
+            
+            # Convert multi-dimensional index to flat index
+            flat_index = 0
+            multiplier = 1
+            
+            for i in range(len(self._shape) - 1, -1, -1):
+                if key[i] < 0 or key[i] >= self._shape[i]:
+                    raise IndexError("Index out of bounds")
+                flat_index += key[i] * multiplier
+                multiplier *= self._shape[i]
+            
+            self._data[flat_index] = value
+        else:
+            # Single index
+            if len(self._shape) == 1:
+                self._data[key] = value
+            else:
+                raise ValueError("Cannot assign to sub-array with single index")
+    
+    def __repr__(self):
+        if not self._data:
+            return "Array([])"
+        
+        def format_data(data, shape, start_idx=0):
+            if len(shape) == 1:
+                return str(data[start_idx:start_idx + shape[0]])
+            else:
+                result = "["
+                sub_size = 1
+                for dim in shape[1:]:
+                    sub_size *= dim
+                
+                for i in range(shape[0]):
+                    if i > 0:
+                        result += ",\n "
+                    sub_start = start_idx + i * sub_size
+                    result += format_data(data, shape[1:], sub_start)
+                
+                result += "]"
+                return result
+        
+        return f"Array({format_data(self._data, self._shape)})"
+    
+    def _check_compatible_shape(self, other):
+        if isinstance(other, Array):
+            if self._shape != other._shape:
+                raise ValueError(f"Shape mismatch: {self._shape} vs {other._shape}")
+            return other._data
+        else:
+            # Scalar
+            return [other] * len(self._data)
+    
+    def __add__(self, other):
+        other_data = self._check_compatible_shape(other)
+        result_data = [a + b for a, b in zip(self._data, other_data)]
+        
+        new_array = Array([])
+        new_array._data = result_data
+        new_array._shape = self._shape
+        return new_array
+    
+    def __sub__(self, other):
+        other_data = self._check_compatible_shape(other)
+        result_data = [a - b for a, b in zip(self._data, other_data)]
+        
+        new_array = Array([])
+        new_array._data = result_data
+        new_array._shape = self._shape
+        return new_array
+    
+    def __mul__(self, other):
+        other_data = self._check_compatible_shape(other)
+        result_data = [a * b for a, b in zip(self._data, other_data)]
+        
+        new_array = Array([])
+        new_array._data = result_data
+        new_array._shape = self._shape
+        return new_array
+    
+    def __truediv__(self, other):
+        other_data = self._check_compatible_shape(other)
+        result_data = [a / b for a, b in zip(self._data, other_data)]
+        
+        new_array = Array([])
+        new_array._data = result_data
+        new_array._shape = self._shape
+        return new_array
+    
+    def reshape(self, new_shape):
+        if isinstance(new_shape, int):
+            new_shape = (new_shape,)
+        
+        # Calculate total elements
+        new_size = 1
+        for dim in new_shape:
+            new_size *= dim
+        
+        if new_size != len(self._data):
+            raise ValueError(f"Cannot reshape array of size {len(self._data)} into shape {new_shape}")
+        
+        new_array = Array([])
+        new_array._data = self._data.copy()
+        new_array._shape = new_shape
+        return new_array
+    
+    @property
+    def T(self):
+        if len(self._shape) != 2:
+            raise ValueError("Transpose is only supported for 2D arrays")
+        
+        rows, cols = self._shape
+        transposed_data = []
+        
+        for j in range(cols):
+            for i in range(rows):
+                transposed_data.append(self._data[i * cols + j])
+        
+        new_array = Array([])
+        new_array._data = transposed_data
+        new_array._shape = (cols, rows)
+        return new_array
+    
+    def dot(self, other):
+        if not isinstance(other, Array):
+            raise TypeError("Dot product requires another Array")
+        
+        if len(self._shape) != 2 or len(other._shape) != 2:
+            raise ValueError("Dot product requires 2D arrays")
+        
+        rows_a, cols_a = self._shape
+        rows_b, cols_b = other._shape
+        
+        if cols_a != rows_b:
+            raise ValueError(f"Cannot multiply arrays with shapes {self._shape} and {other._shape}")
+        
+        result_data = []
+        
+        for i in range(rows_a):
+            for j in range(cols_b):
+                dot_product = 0
+                for k in range(cols_a):
+                    a_val = self._data[i * cols_a + k]
+                    b_val = other._data[k * cols_b + j]
+                    dot_product += a_val * b_val
+                result_data.append(dot_product)
+        
+        new_array = Array([])
+        new_array._data = result_data
+        new_array._shape = (rows_a, cols_b)
+        return new_array
+    
+    def sum(self):
+        return sum(self._data)
+    
+    def mean(self):
+        if not self._data:
+            raise ValueError("Cannot calculate mean of empty array")
+        return sum(self._data) / len(self._data)
