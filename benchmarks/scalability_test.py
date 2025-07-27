@@ -330,8 +330,11 @@ def test_reshape_scaling():
     
     for size in sizes:
         data = list(range(size))
-        # Find a good square-ish shape
+        # Find a good square-ish shape that exactly divides the size
         sqrt_size = int(size ** 0.5)
+        # Ensure the product equals the original size
+        while size % sqrt_size != 0:
+            sqrt_size -= 1
         new_shape = (sqrt_size, size // sqrt_size)
         
         test_arrays[size] = {
