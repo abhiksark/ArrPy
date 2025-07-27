@@ -4,9 +4,10 @@ Scalability benchmarks to test how arrpy and numpy performance scales with array
 
 import time
 import numpy as np
-from arrpy import Array
+from arrpy import Array, zeros, ones, arange, linspace
 import matplotlib.pyplot as plt
 import gc
+import math
 from statistics import mean
 
 class ScalabilityBenchmark:
@@ -357,6 +358,117 @@ def test_reshape_scaling():
     
     return benchmark
 
+def test_new_features_scaling():
+    """Test how new features scale with size"""
+    benchmark = ScalabilityBenchmark()
+    
+    print("\n" + "=" * 60)
+    print("NEW FEATURES SCALABILITY")
+    print("=" * 60)
+    
+    # Array creation functions scaling
+    sizes_1d = [1000, 5000, 10000, 25000, 50000]
+    
+    # zeros scaling
+    def zeros_arrpy(size):
+        return zeros(size)
+    
+    def zeros_numpy(size):
+        return np.zeros(size)
+    
+    benchmark.test_scaling("zeros 1D", sizes_1d, zeros_arrpy, zeros_numpy)
+    
+    # ones scaling
+    def ones_arrpy(size):
+        return ones(size)
+    
+    def ones_numpy(size):
+        return np.ones(size)
+    
+    benchmark.test_scaling("ones 1D", sizes_1d, ones_arrpy, ones_numpy)
+    
+    # arange scaling
+    def arange_arrpy(size):
+        return arange(size)
+    
+    def arange_numpy(size):
+        return np.arange(size)
+    
+    benchmark.test_scaling("arange", sizes_1d, arange_arrpy, arange_numpy)
+    
+    # Extended aggregations scaling
+    test_arrays_1d = {}
+    for size in sizes_1d:
+        data = list(range(size))
+        test_arrays_1d[size] = {
+            'arrpy': Array(data),
+            'numpy': np.array(data)
+        }
+    
+    # min scaling
+    def min_arrpy(size):
+        return test_arrays_1d[size]['arrpy'].min()
+    
+    def min_numpy(size):
+        return test_arrays_1d[size]['numpy'].min()
+    
+    benchmark.test_scaling("min", sizes_1d, min_arrpy, min_numpy)
+    
+    # max scaling
+    def max_arrpy(size):
+        return test_arrays_1d[size]['arrpy'].max()
+    
+    def max_numpy(size):
+        return test_arrays_1d[size]['numpy'].max()
+    
+    benchmark.test_scaling("max", sizes_1d, max_arrpy, max_numpy)
+    
+    # std scaling
+    def std_arrpy(size):
+        return test_arrays_1d[size]['arrpy'].std()
+    
+    def std_numpy(size):
+        return test_arrays_1d[size]['numpy'].std()
+    
+    benchmark.test_scaling("std", sizes_1d, std_arrpy, std_numpy)
+    
+    # Mathematical functions scaling (smaller sizes due to computation cost)
+    sizes_math = [1000, 2500, 5000, 10000, 20000]
+    test_arrays_math = {}
+    
+    for size in sizes_math:
+        # Positive data for sqrt and log
+        data_pos = [i + 1 for i in range(size)]
+        # Trigonometric data
+        data_trig = [i * 2 * math.pi / size for i in range(size)]
+        
+        test_arrays_math[size] = {
+            'arrpy_pos': Array(data_pos),
+            'numpy_pos': np.array(data_pos),
+            'arrpy_trig': Array(data_trig),
+            'numpy_trig': np.array(data_trig)
+        }
+    
+    # sqrt scaling
+    def sqrt_arrpy(size):
+        return test_arrays_math[size]['arrpy_pos'].sqrt()
+    
+    def sqrt_numpy(size):
+        return np.sqrt(test_arrays_math[size]['numpy_pos'])
+    
+    benchmark.test_scaling("sqrt", sizes_math, sqrt_arrpy, sqrt_numpy)
+    
+    # sin scaling
+    def sin_arrpy(size):
+        return test_arrays_math[size]['arrpy_trig'].sin()
+    
+    def sin_numpy(size):
+        return np.sin(test_arrays_math[size]['numpy_trig'])
+    
+    benchmark.test_scaling("sin", sizes_math, sin_arrpy, sin_numpy)
+    
+    return benchmark
+
 def analyze_complexity(benchmark_results):
     """Analyze the computational complexity from benchmark results"""
     print("\n" + "=" * 80)
@@ -485,7 +597,8 @@ def run_scalability_tests():
         ("Matrix Operations", test_matrix_operations_scaling),
         ("Aggregation Operations", test_aggregation_scaling),
         ("Indexing Operations", test_indexing_scaling),
-        ("Reshape Operations", test_reshape_scaling)
+        ("Reshape Operations", test_reshape_scaling),
+        ("New Features", test_new_features_scaling)
     ]
     
     for category_name, test_func in test_functions:

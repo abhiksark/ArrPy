@@ -13,7 +13,12 @@ A pure Python implementation that mimics the core functionality of NumPy's ndarr
 - **Element-wise arithmetic operations** (+, -, *, /)
 - **Matrix operations** including transpose (T) and dot product
 - **Array reshaping** with shape compatibility validation
-- **Aggregation functions** (sum, mean)
+- **Array creation functions** (zeros, ones, eye, arange, linspace)
+- **Aggregation functions** (sum, mean, min, max, std, var, median, percentile)
+- **Mathematical functions** (sqrt, sin, cos, exp, log)
+- **Comparison operations** (==, !=, >, <, >=, <=)
+- **Logical operations** (logical_and, logical_or, logical_not)
+- **Array concatenation and stacking** (concatenate, vstack, hstack)
 - **Error handling** for shape mismatches and invalid operations
 - **Pure Python implementation** - no external dependencies required
 
@@ -46,11 +51,18 @@ pip install -r requirements.txt
 ## Usage
 
 ```python
-from arrpy import Array
+from arrpy import Array, zeros, ones, eye, arange, linspace, concatenate, vstack, hstack
 
 # Create arrays
 a = Array([1, 2, 3])
 b = Array([[1, 2], [3, 4]])
+
+# Array creation functions
+zeros_arr = zeros((2, 3))        # 2x3 array of zeros
+ones_arr = ones(5)               # 1D array of ones
+identity = eye(3)                # 3x3 identity matrix
+range_arr = arange(0, 10, 2)     # [0, 2, 4, 6, 8]
+linear = linspace(0, 1, 11)      # 11 evenly spaced values from 0 to 1
 
 # Basic operations
 print(a.shape)  # (3,)
@@ -78,9 +90,48 @@ reshaped = Array([1, 2, 3, 4, 5, 6]).reshape((2, 3))
 # Aggregations
 total = a.sum()
 average = a.mean()
+minimum = a.min()
+maximum = a.max()
+std_dev = a.std()
+variance = a.var()
+med = a.median()
+p90 = a.percentile(90)
+
+# Mathematical functions
+sqrt_arr = a.sqrt()     # Element-wise square root
+sin_arr = a.sin()       # Element-wise sine
+exp_arr = a.exp()       # Element-wise exponential
+
+# Comparison operations
+greater = a > 2         # Element-wise comparison
+equal = a == Array([1, 2, 4])  # Element-wise equality
+
+# Logical operations
+bool_arr1 = Array([True, False, True])
+bool_arr2 = Array([False, False, True])
+and_result = bool_arr1.logical_and(bool_arr2)
+or_result = bool_arr1.logical_or(bool_arr2)
+not_result = bool_arr1.logical_not()
+
+# Array concatenation and stacking
+arr1 = Array([1, 2])
+arr2 = Array([3, 4])
+concatenated = concatenate([arr1, arr2])  # [1, 2, 3, 4]
+
+mat1 = Array([[1, 2]])
+mat2 = Array([[3, 4]])
+vstacked = vstack([mat1, mat2])           # [[1, 2], [3, 4]]
+hstacked = hstack([mat1.T, mat2.T])       # [[1, 3], [2, 4]]
 ```
 
 ## Supported Operations
+
+### Array Creation
+- `zeros(shape)`: Create array filled with zeros
+- `ones(shape)`: Create array filled with ones  
+- `eye(n, m=None)`: Create identity matrix
+- `arange(start, stop=None, step=1)`: Create array with evenly spaced values
+- `linspace(start, stop, num=50)`: Create array with linearly spaced values
 
 ### Initialization
 - Create arrays from nested lists
@@ -111,6 +162,31 @@ Works with both scalars and other Array instances of compatible shapes.
 ### Aggregations
 - Sum: `arr.sum()`
 - Mean: `arr.mean()`
+- Min/Max: `arr.min()`, `arr.max()`
+- Standard deviation: `arr.std()`
+- Variance: `arr.var()`
+- Median: `arr.median()`
+- Percentile: `arr.percentile(q)`
+
+### Mathematical Functions
+- Square root: `arr.sqrt()`
+- Trigonometric: `arr.sin()`, `arr.cos()`
+- Exponential: `arr.exp()`
+- Natural logarithm: `arr.log()`
+
+### Comparison Operations
+- Element-wise comparisons: `==`, `!=`, `>`, `<`, `>=`, `<=`
+- Works with both arrays and scalars
+
+### Logical Operations
+- Logical AND: `arr1.logical_and(arr2)`
+- Logical OR: `arr1.logical_or(arr2)`
+- Logical NOT: `arr.logical_not()`
+
+### Array Concatenation and Stacking
+- Concatenate: `concatenate([arr1, arr2], axis=0)`
+- Vertical stack: `vstack([arr1, arr2])`
+- Horizontal stack: `hstack([arr1, arr2])`
 
 ## Testing
 

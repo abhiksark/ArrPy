@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
-from arrpy import Array
+import math
+from arrpy import Array, zeros, ones, eye, arange, linspace, concatenate, vstack, hstack
 
 
 class TestArrayInitialization:
@@ -323,3 +324,331 @@ class TestComparisonWithNumPy:
         for i in range(2):
             for j in range(3):
                 assert result[i, j] == np_result[i, j]
+
+
+class TestArrayCreationFunctions:
+    def test_zeros_1d(self):
+        arr = zeros(5)
+        assert arr.shape == (5,)
+        for i in range(5):
+            assert arr[i] == 0
+    
+    def test_zeros_2d(self):
+        arr = zeros((2, 3))
+        assert arr.shape == (2, 3)
+        for i in range(2):
+            for j in range(3):
+                assert arr[i, j] == 0
+    
+    def test_ones_1d(self):
+        arr = ones(4)
+        assert arr.shape == (4,)
+        for i in range(4):
+            assert arr[i] == 1
+    
+    def test_ones_2d(self):
+        arr = ones((3, 2))
+        assert arr.shape == (3, 2)
+        for i in range(3):
+            for j in range(2):
+                assert arr[i, j] == 1
+    
+    def test_eye_square(self):
+        arr = eye(3)
+        assert arr.shape == (3, 3)
+        for i in range(3):
+            for j in range(3):
+                if i == j:
+                    assert arr[i, j] == 1
+                else:
+                    assert arr[i, j] == 0
+    
+    def test_eye_rectangular(self):
+        arr = eye(2, 4)
+        assert arr.shape == (2, 4)
+        for i in range(2):
+            for j in range(4):
+                if i == j:
+                    assert arr[i, j] == 1
+                else:
+                    assert arr[i, j] == 0
+    
+    def test_arange_default_start(self):
+        arr = arange(5)
+        assert arr.shape == (5,)
+        expected = [0, 1, 2, 3, 4]
+        for i in range(5):
+            assert arr[i] == expected[i]
+    
+    def test_arange_with_start_stop(self):
+        arr = arange(2, 7)
+        assert arr.shape == (5,)
+        expected = [2, 3, 4, 5, 6]
+        for i in range(5):
+            assert arr[i] == expected[i]
+    
+    def test_arange_with_step(self):
+        arr = arange(0, 10, 2)
+        assert arr.shape == (5,)
+        expected = [0, 2, 4, 6, 8]
+        for i in range(5):
+            assert arr[i] == expected[i]
+    
+    def test_linspace_default(self):
+        arr = linspace(0, 1, 11)
+        assert arr.shape == (11,)
+        assert arr[0] == 0
+        assert arr[10] == 1
+        assert abs(arr[5] - 0.5) < 1e-10
+    
+    def test_linspace_single_point(self):
+        arr = linspace(5, 10, 1)
+        assert arr.shape == (1,)
+        assert arr[0] == 5
+
+
+class TestExtendedAggregations:
+    def test_min_1d(self):
+        arr = Array([3, 1, 4, 1, 5])
+        assert arr.min() == 1
+    
+    def test_max_1d(self):
+        arr = Array([3, 1, 4, 1, 5])
+        assert arr.max() == 5
+    
+    def test_std_calculation(self):
+        arr = Array([1, 2, 3, 4, 5])
+        expected_std = math.sqrt(sum((x - 3) ** 2 for x in [1, 2, 3, 4, 5]) / 5)
+        assert abs(arr.std() - expected_std) < 1e-10
+    
+    def test_var_calculation(self):
+        arr = Array([1, 2, 3, 4, 5])
+        expected_var = sum((x - 3) ** 2 for x in [1, 2, 3, 4, 5]) / 5
+        assert abs(arr.var() - expected_var) < 1e-10
+    
+    def test_median_odd_length(self):
+        arr = Array([1, 3, 2, 5, 4])
+        assert arr.median() == 3
+    
+    def test_median_even_length(self):
+        arr = Array([1, 2, 3, 4])
+        assert arr.median() == 2.5
+    
+    def test_percentile_0(self):
+        arr = Array([1, 2, 3, 4, 5])
+        assert arr.percentile(0) == 1
+    
+    def test_percentile_100(self):
+        arr = Array([1, 2, 3, 4, 5])
+        assert arr.percentile(100) == 5
+    
+    def test_percentile_50(self):
+        arr = Array([1, 2, 3, 4, 5])
+        assert arr.percentile(50) == 3
+    
+    def test_empty_array_errors(self):
+        arr = Array([])
+        with pytest.raises(ValueError):
+            arr.min()
+        with pytest.raises(ValueError):
+            arr.max()
+        with pytest.raises(ValueError):
+            arr.std()
+        with pytest.raises(ValueError):
+            arr.var()
+        with pytest.raises(ValueError):
+            arr.median()
+        with pytest.raises(ValueError):
+            arr.percentile(50)
+
+
+class TestMathematicalFunctions:
+    def test_sqrt(self):
+        arr = Array([1, 4, 9, 16])
+        result = arr.sqrt()
+        expected = [1, 2, 3, 4]
+        for i in range(4):
+            assert abs(result[i] - expected[i]) < 1e-10
+    
+    def test_sin(self):
+        arr = Array([0, math.pi/2, math.pi])
+        result = arr.sin()
+        expected = [0, 1, 0]
+        for i in range(3):
+            assert abs(result[i] - expected[i]) < 1e-10
+    
+    def test_cos(self):
+        arr = Array([0, math.pi/2, math.pi])
+        result = arr.cos()
+        expected = [1, 0, -1]
+        for i in range(3):
+            assert abs(result[i] - expected[i]) < 1e-10
+    
+    def test_exp(self):
+        arr = Array([0, 1, 2])
+        result = arr.exp()
+        expected = [1, math.e, math.e**2]
+        for i in range(3):
+            assert abs(result[i] - expected[i]) < 1e-10
+    
+    def test_log(self):
+        arr = Array([1, math.e, math.e**2])
+        result = arr.log()
+        expected = [0, 1, 2]
+        for i in range(3):
+            assert abs(result[i] - expected[i]) < 1e-10
+
+
+class TestComparisonOperations:
+    def test_equality(self):
+        arr1 = Array([1, 2, 3])
+        arr2 = Array([1, 0, 3])
+        result = arr1 == arr2
+        expected = [True, False, True]
+        for i in range(3):
+            assert result[i] == expected[i]
+    
+    def test_not_equal(self):
+        arr1 = Array([1, 2, 3])
+        arr2 = Array([1, 0, 3])
+        result = arr1 != arr2
+        expected = [False, True, False]
+        for i in range(3):
+            assert result[i] == expected[i]
+    
+    def test_greater_than(self):
+        arr1 = Array([3, 1, 2])
+        arr2 = Array([1, 2, 2])
+        result = arr1 > arr2
+        expected = [True, False, False]
+        for i in range(3):
+            assert result[i] == expected[i]
+    
+    def test_less_than(self):
+        arr1 = Array([1, 3, 2])
+        arr2 = Array([2, 2, 2])
+        result = arr1 < arr2
+        expected = [True, False, False]
+        for i in range(3):
+            assert result[i] == expected[i]
+    
+    def test_greater_equal(self):
+        arr1 = Array([3, 2, 1])
+        arr2 = Array([2, 2, 2])
+        result = arr1 >= arr2
+        expected = [True, True, False]
+        for i in range(3):
+            assert result[i] == expected[i]
+    
+    def test_less_equal(self):
+        arr1 = Array([1, 2, 3])
+        arr2 = Array([2, 2, 2])
+        result = arr1 <= arr2
+        expected = [True, True, False]
+        for i in range(3):
+            assert result[i] == expected[i]
+    
+    def test_scalar_comparison(self):
+        arr = Array([1, 2, 3])
+        result = arr > 2
+        expected = [False, False, True]
+        for i in range(3):
+            assert result[i] == expected[i]
+
+
+class TestLogicalOperations:
+    def test_logical_and(self):
+        arr1 = Array([True, True, False, False])
+        arr2 = Array([True, False, True, False])
+        result = arr1.logical_and(arr2)
+        expected = [True, False, False, False]
+        for i in range(4):
+            assert result[i] == expected[i]
+    
+    def test_logical_or(self):
+        arr1 = Array([True, True, False, False])
+        arr2 = Array([True, False, True, False])
+        result = arr1.logical_or(arr2)
+        expected = [True, True, True, False]
+        for i in range(4):
+            assert result[i] == expected[i]
+    
+    def test_logical_not(self):
+        arr = Array([True, False, True, False])
+        result = arr.logical_not()
+        expected = [False, True, False, True]
+        for i in range(4):
+            assert result[i] == expected[i]
+    
+    def test_logical_with_numbers(self):
+        arr1 = Array([1, 0, 2, 0])
+        arr2 = Array([3, 0, 0, 4])
+        result = arr1.logical_and(arr2)
+        expected = [True, False, False, False]
+        for i in range(4):
+            assert result[i] == expected[i]
+
+
+class TestConcatenationFunctions:
+    def test_concatenate_1d(self):
+        arr1 = Array([1, 2])
+        arr2 = Array([3, 4])
+        result = concatenate([arr1, arr2])
+        assert result.shape == (4,)
+        expected = [1, 2, 3, 4]
+        for i in range(4):
+            assert result[i] == expected[i]
+    
+    def test_concatenate_2d_axis0(self):
+        arr1 = Array([[1, 2], [3, 4]])
+        arr2 = Array([[5, 6]])
+        result = concatenate([arr1, arr2], axis=0)
+        assert result.shape == (3, 2)
+        assert result[0, 0] == 1
+        assert result[2, 1] == 6
+    
+    def test_concatenate_2d_axis1(self):
+        arr1 = Array([[1, 2], [3, 4]])
+        arr2 = Array([[5], [6]])
+        result = concatenate([arr1, arr2], axis=1)
+        assert result.shape == (2, 3)
+        assert result[0, 0] == 1
+        assert result[1, 2] == 6
+    
+    def test_vstack(self):
+        arr1 = Array([[1, 2]])
+        arr2 = Array([[3, 4]])
+        result = vstack([arr1, arr2])
+        assert result.shape == (2, 2)
+        assert result[0, 0] == 1
+        assert result[1, 1] == 4
+    
+    def test_hstack_1d(self):
+        arr1 = Array([1, 2])
+        arr2 = Array([3, 4])
+        result = hstack([arr1, arr2])
+        assert result.shape == (4,)
+        expected = [1, 2, 3, 4]
+        for i in range(4):
+            assert result[i] == expected[i]
+    
+    def test_hstack_2d(self):
+        arr1 = Array([[1], [3]])
+        arr2 = Array([[2], [4]])
+        result = hstack([arr1, arr2])
+        assert result.shape == (2, 2)
+        assert result[0, 0] == 1
+        assert result[1, 1] == 4
+    
+    def test_concatenate_errors(self):
+        arr1 = Array([1, 2])
+        arr2 = Array([[1, 2]])
+        
+        with pytest.raises(ValueError):
+            concatenate([arr1, arr2])
+        
+        with pytest.raises(ValueError):
+            concatenate([])
+        
+        with pytest.raises(TypeError):
+            concatenate([arr1, [1, 2, 3]])

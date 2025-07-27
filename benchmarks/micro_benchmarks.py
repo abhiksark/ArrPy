@@ -4,9 +4,9 @@ Micro-benchmarks for specific operations comparing arrpy vs numpy
 
 import time
 import numpy as np
-from arrpy import Array
-import matplotlib.pyplot as plt
+from arrpy import Array, zeros, ones, eye, arange, linspace, concatenate, vstack, hstack
 import gc
+import math
 from statistics import mean, stdev
 
 class MicroBenchmark:
@@ -317,6 +317,328 @@ def benchmark_reshape_patterns():
     
     return benchmark
 
+def benchmark_array_creation_functions():
+    """Benchmark array creation function patterns"""
+    benchmark = MicroBenchmark(iterations=1000)
+    
+    print("\n" + "=" * 60)
+    print("ARRAY CREATION FUNCTION BENCHMARKS")
+    print("=" * 60)
+    
+    # Test zeros function
+    for size in [100, 1000, 5000]:
+        benchmark.compare_operations(
+            f"zeros 1D ({size} elements)",
+            lambda s=size: zeros(s),
+            lambda s=size: np.zeros(s)
+        )
+    
+    for size in [10, 50, 100]:
+        benchmark.compare_operations(
+            f"zeros 2D ({size}x{size})",
+            lambda s=size: zeros((s, s)),
+            lambda s=size: np.zeros((s, s))
+        )
+    
+    # Test ones function
+    for size in [100, 1000, 5000]:
+        benchmark.compare_operations(
+            f"ones 1D ({size} elements)",
+            lambda s=size: ones(s),
+            lambda s=size: np.ones(s)
+        )
+    
+    # Test eye function
+    for size in [10, 50, 100]:
+        benchmark.compare_operations(
+            f"eye ({size}x{size})",
+            lambda s=size: eye(s),
+            lambda s=size: np.eye(s)
+        )
+    
+    # Test arange function
+    for size in [100, 1000, 10000]:
+        benchmark.compare_operations(
+            f"arange (0 to {size})",
+            lambda s=size: arange(s),
+            lambda s=size: np.arange(s)
+        )
+    
+    # Test linspace function
+    for num_points in [50, 500, 2000]:
+        benchmark.compare_operations(
+            f"linspace ({num_points} points)",
+            lambda n=num_points: linspace(0, 1, n),
+            lambda n=num_points: np.linspace(0, 1, n)
+        )
+    
+    return benchmark
+
+def benchmark_extended_aggregation_functions():
+    """Benchmark extended aggregation function patterns"""
+    benchmark = MicroBenchmark(iterations=500)
+    
+    print("\n" + "=" * 60)
+    print("EXTENDED AGGREGATION FUNCTION BENCHMARKS")
+    print("=" * 60)
+    
+    # Test different array sizes
+    for size in [1000, 5000, 20000]:
+        data = list(range(size))
+        arr_arrpy = Array(data)
+        arr_numpy = np.array(data)
+        
+        # Min/Max
+        benchmark.compare_operations(
+            f"min ({size} elements)",
+            lambda a=arr_arrpy: a.min(),
+            lambda a=arr_numpy: a.min()
+        )
+        
+        benchmark.compare_operations(
+            f"max ({size} elements)",
+            lambda a=arr_arrpy: a.max(),
+            lambda a=arr_numpy: a.max()
+        )
+        
+        # Standard deviation and variance
+        benchmark.compare_operations(
+            f"std ({size} elements)",
+            lambda a=arr_arrpy: a.std(),
+            lambda a=arr_numpy: a.std()
+        )
+        
+        benchmark.compare_operations(
+            f"var ({size} elements)",
+            lambda a=arr_arrpy: a.var(),
+            lambda a=arr_numpy: a.var()
+        )
+        
+        # Median and percentile
+        benchmark.compare_operations(
+            f"median ({size} elements)",
+            lambda a=arr_arrpy: a.median(),
+            lambda a=arr_numpy: np.median(a)
+        )
+        
+        benchmark.compare_operations(
+            f"percentile 90 ({size} elements)",
+            lambda a=arr_arrpy: a.percentile(90),
+            lambda a=arr_numpy: np.percentile(a, 90)
+        )
+    
+    return benchmark
+
+def benchmark_mathematical_function_patterns():
+    """Benchmark mathematical function patterns"""
+    benchmark = MicroBenchmark(iterations=200)
+    
+    print("\n" + "=" * 60)
+    print("MATHEMATICAL FUNCTION BENCHMARKS")
+    print("=" * 60)
+    
+    # Test different array sizes
+    for size in [1000, 5000, 20000]:
+        # Positive data for sqrt and log
+        data_pos = [i + 1 for i in range(size)]
+        arr_arrpy_pos = Array(data_pos)
+        arr_numpy_pos = np.array(data_pos)
+        
+        # Square root
+        benchmark.compare_operations(
+            f"sqrt ({size} elements)",
+            lambda a=arr_arrpy_pos: a.sqrt(),
+            lambda a=arr_numpy_pos: np.sqrt(a)
+        )
+        
+        # Natural logarithm
+        benchmark.compare_operations(
+            f"log ({size} elements)",
+            lambda a=arr_arrpy_pos: a.log(),
+            lambda a=arr_numpy_pos: np.log(a)
+        )
+        
+        # Exponential (limited size to avoid overflow)
+        if size <= 1000:
+            data_small = [i * 0.001 for i in range(size)]
+            arr_arrpy_small = Array(data_small)
+            arr_numpy_small = np.array(data_small)
+            
+            benchmark.compare_operations(
+                f"exp ({size} elements)",
+                lambda a=arr_arrpy_small: a.exp(),
+                lambda a=arr_numpy_small: np.exp(a)
+            )
+        
+        # Trigonometric functions
+        data_trig = [i * 2 * math.pi / size for i in range(size)]
+        arr_arrpy_trig = Array(data_trig)
+        arr_numpy_trig = np.array(data_trig)
+        
+        benchmark.compare_operations(
+            f"sin ({size} elements)",
+            lambda a=arr_arrpy_trig: a.sin(),
+            lambda a=arr_numpy_trig: np.sin(a)
+        )
+        
+        benchmark.compare_operations(
+            f"cos ({size} elements)",
+            lambda a=arr_arrpy_trig: a.cos(),
+            lambda a=arr_numpy_trig: np.cos(a)
+        )
+    
+    return benchmark
+
+def benchmark_comparison_operation_patterns():
+    """Benchmark comparison operation patterns"""
+    benchmark = MicroBenchmark(iterations=500)
+    
+    print("\n" + "=" * 60)
+    print("COMPARISON OPERATION BENCHMARKS")
+    print("=" * 60)
+    
+    # Test different array sizes
+    for size in [1000, 5000, 20000]:
+        data1 = list(range(size))
+        data2 = list(range(size//2, size + size//2))
+        
+        arr1_arrpy = Array(data1)
+        arr2_arrpy = Array(data2)
+        arr1_numpy = np.array(data1)
+        arr2_numpy = np.array(data2)
+        
+        # Element-wise comparisons
+        benchmark.compare_operations(
+            f"equal ({size} elements)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: a1 == a2,
+            lambda a1=arr1_numpy, a2=arr2_numpy: a1 == a2
+        )
+        
+        benchmark.compare_operations(
+            f"not equal ({size} elements)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: a1 != a2,
+            lambda a1=arr1_numpy, a2=arr2_numpy: a1 != a2
+        )
+        
+        benchmark.compare_operations(
+            f"greater than ({size} elements)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: a1 > a2,
+            lambda a1=arr1_numpy, a2=arr2_numpy: a1 > a2
+        )
+        
+        benchmark.compare_operations(
+            f"less than ({size} elements)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: a1 < a2,
+            lambda a1=arr1_numpy, a2=arr2_numpy: a1 < a2
+        )
+        
+        # Scalar comparisons
+        benchmark.compare_operations(
+            f"scalar comparison ({size} elements)",
+            lambda a=arr1_arrpy: a > size//2,
+            lambda a=arr1_numpy: a > size//2
+        )
+    
+    return benchmark
+
+def benchmark_logical_operation_patterns():
+    """Benchmark logical operation patterns"""
+    benchmark = MicroBenchmark(iterations=500)
+    
+    print("\n" + "=" * 60)
+    print("LOGICAL OPERATION BENCHMARKS")
+    print("=" * 60)
+    
+    # Test different array sizes
+    for size in [1000, 5000, 20000]:
+        # Create boolean-like data
+        data1 = [i % 2 for i in range(size)]
+        data2 = [(i + 1) % 3 == 0 for i in range(size)]
+        
+        arr1_arrpy = Array(data1)
+        arr2_arrpy = Array(data2)
+        arr1_numpy = np.array(data1, dtype=bool)
+        arr2_numpy = np.array(data2, dtype=bool)
+        
+        # Logical operations
+        benchmark.compare_operations(
+            f"logical_and ({size} elements)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: a1.logical_and(a2),
+            lambda a1=arr1_numpy, a2=arr2_numpy: np.logical_and(a1, a2)
+        )
+        
+        benchmark.compare_operations(
+            f"logical_or ({size} elements)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: a1.logical_or(a2),
+            lambda a1=arr1_numpy, a2=arr2_numpy: np.logical_or(a1, a2)
+        )
+        
+        benchmark.compare_operations(
+            f"logical_not ({size} elements)",
+            lambda a=arr1_arrpy: a.logical_not(),
+            lambda a=arr1_numpy: np.logical_not(a)
+        )
+    
+    return benchmark
+
+def benchmark_concatenation_operation_patterns():
+    """Benchmark concatenation operation patterns"""
+    benchmark = MicroBenchmark(iterations=200)
+    
+    print("\n" + "=" * 60)
+    print("CONCATENATION OPERATION BENCHMARKS")
+    print("=" * 60)
+    
+    # 1D concatenation benchmarks
+    for size in [100, 500, 2000]:
+        data1 = list(range(size))
+        data2 = list(range(size, 2*size))
+        
+        arr1_arrpy = Array(data1)
+        arr2_arrpy = Array(data2)
+        arr1_numpy = np.array(data1)
+        arr2_numpy = np.array(data2)
+        
+        # 1D concatenation
+        benchmark.compare_operations(
+            f"concatenate 1D ({size} elements each)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: concatenate([a1, a2]),
+            lambda a1=arr1_numpy, a2=arr2_numpy: np.concatenate([a1, a2])
+        )
+        
+        # hstack for 1D
+        benchmark.compare_operations(
+            f"hstack 1D ({size} elements each)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: hstack([a1, a2]),
+            lambda a1=arr1_numpy, a2=arr2_numpy: np.hstack([a1, a2])
+        )
+    
+    # 2D stacking benchmarks
+    for size in [10, 25, 50]:
+        data1 = [[i + j for j in range(size)] for i in range(size)]
+        data2 = [[i + j + size for j in range(size)] for i in range(size)]
+        
+        arr1_arrpy = Array(data1)
+        arr2_arrpy = Array(data2)
+        arr1_numpy = np.array(data1)
+        arr2_numpy = np.array(data2)
+        
+        # Vertical stack
+        benchmark.compare_operations(
+            f"vstack 2D ({size}x{size} each)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: vstack([a1, a2]),
+            lambda a1=arr1_numpy, a2=arr2_numpy: np.vstack([a1, a2])
+        )
+        
+        # Horizontal stack
+        benchmark.compare_operations(
+            f"hstack 2D ({size}x{size} each)",
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: hstack([a1, a2]),
+            lambda a1=arr1_numpy, a2=arr2_numpy: np.hstack([a1, a2])
+        )
+    
+    return benchmark
+
 def generate_performance_report(benchmarks):
     """Generate a comprehensive performance report"""
     print("\n" + "=" * 80)
@@ -391,7 +713,13 @@ def run_micro_benchmarks():
         ("Indexing Operations", benchmark_indexing_patterns),
         ("Matrix Operations", benchmark_matrix_operation_patterns),
         ("Aggregation Operations", benchmark_aggregation_patterns),
-        ("Reshape Operations", benchmark_reshape_patterns)
+        ("Reshape Operations", benchmark_reshape_patterns),
+        ("Array Creation Functions", benchmark_array_creation_functions),
+        ("Extended Aggregation Functions", benchmark_extended_aggregation_functions),
+        ("Mathematical Functions", benchmark_mathematical_function_patterns),
+        ("Comparison Operations", benchmark_comparison_operation_patterns),
+        ("Logical Operations", benchmark_logical_operation_patterns),
+        ("Concatenation Operations", benchmark_concatenation_operation_patterns)
     ]
     
     for name, func in benchmark_functions:
