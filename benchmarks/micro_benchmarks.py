@@ -1,10 +1,10 @@
 """
-Micro-benchmarks for specific operations comparing arrypy vs numpy
+Micro-benchmarks for specific operations comparing arrpy vs numpy
 """
 
 import time
 import numpy as np
-from arrypy import Array
+from arrpy import Array
 import matplotlib.pyplot as plt
 import gc
 from statistics import mean, stdev
@@ -33,27 +33,27 @@ class MicroBenchmark:
             'times': times
         }
     
-    def compare_operations(self, name, arrypy_func, numpy_func, *args, **kwargs):
-        """Compare arrypy and numpy operations"""
+    def compare_operations(self, name, arrpy_func, numpy_func, *args, **kwargs):
+        """Compare arrpy and numpy operations"""
         print(f"\nBenchmarking: {name}")
         print(f"Iterations: {self.iterations}")
         
-        arrypy_stats = self.time_function(arrypy_func, *args, **kwargs)
+        arrpy_stats = self.time_function(arrpy_func, *args, **kwargs)
         numpy_stats = self.time_function(numpy_func, *args, **kwargs)
         
-        speedup = arrypy_stats['mean'] / numpy_stats['mean']
+        speedup = arrpy_stats['mean'] / numpy_stats['mean']
         
-        print(f"arrypy: {arrypy_stats['mean']:.6f}s ± {arrypy_stats['std']:.6f}s")
+        print(f"arrpy: {arrpy_stats['mean']:.6f}s ± {arrpy_stats['std']:.6f}s")
         print(f"numpy:  {numpy_stats['mean']:.6f}s ± {numpy_stats['std']:.6f}s")
         print(f"Speedup: {speedup:.2f}x (numpy faster)")
         
         self.results[name] = {
-            'arrypy': arrypy_stats,
+            'arrpy': arrpy_stats,
             'numpy': numpy_stats,
             'speedup': speedup
         }
         
-        return arrypy_stats, numpy_stats, speedup
+        return arrpy_stats, numpy_stats, speedup
 
 def benchmark_creation_patterns():
     """Benchmark different array creation patterns"""
@@ -106,8 +106,8 @@ def benchmark_arithmetic_patterns():
         data1 = [[i + j for j in range(size)] for i in range(size)]
         data2 = [[i * j + 1 for j in range(size)] for i in range(size)]
         
-        arr1_arrypy = Array(data1)
-        arr2_arrypy = Array(data2)
+        arr1_arrpy = Array(data1)
+        arr2_arrpy = Array(data2)
         arr1_numpy = np.array(data1)
         arr2_numpy = np.array(data2)
         
@@ -122,14 +122,14 @@ def benchmark_arithmetic_patterns():
         for op_name, op_func in operations:
             benchmark.compare_operations(
                 f"{op_name} ({size}x{size})",
-                lambda a1=arr1_arrypy, a2=arr2_arrypy: op_func(a1, a2),
+                lambda a1=arr1_arrpy, a2=arr2_arrpy: op_func(a1, a2),
                 lambda a1=arr1_numpy, a2=arr2_numpy: op_func(a1, a2)
             )
         
         # Scalar operations
         benchmark.compare_operations(
             f"Scalar multiplication ({size}x{size})",
-            lambda a=arr1_arrypy: a * 3.14159,
+            lambda a=arr1_arrpy: a * 3.14159,
             lambda a=arr1_numpy: a * 3.14159
         )
     
@@ -146,20 +146,20 @@ def benchmark_indexing_patterns():
     # Create test array
     size = 50
     data = [[i + j for j in range(size)] for i in range(size)]
-    arr_arrypy = Array(data)
+    arr_arrpy = Array(data)
     arr_numpy = np.array(data)
     
     # Single element access
     benchmark.compare_operations(
         "Single element access [25, 25]",
-        lambda: arr_arrypy[25, 25],
+        lambda: arr_arrpy[25, 25],
         lambda: arr_numpy[25, 25]
     )
     
     # Row access
     benchmark.compare_operations(
         "Row access [10]",
-        lambda: arr_arrypy[10],
+        lambda: arr_arrpy[10],
         lambda: arr_numpy[10]
     )
     
@@ -168,10 +168,10 @@ def benchmark_indexing_patterns():
     random.seed(42)  # Reproducible results
     indices = [(random.randint(0, size-1), random.randint(0, size-1)) for _ in range(10)]
     
-    def multiple_access_arrypy():
+    def multiple_access_arrpy():
         total = 0
         for i, j in indices:
-            total += arr_arrypy[i, j]
+            total += arr_arrpy[i, j]
         return total
     
     def multiple_access_numpy():
@@ -182,7 +182,7 @@ def benchmark_indexing_patterns():
     
     benchmark.compare_operations(
         "Multiple random access (10 elements)",
-        multiple_access_arrypy,
+        multiple_access_arrpy,
         multiple_access_numpy
     )
     
@@ -201,40 +201,40 @@ def benchmark_matrix_operation_patterns():
         data1 = [[i + j + 1 for j in range(size)] for i in range(size)]
         data2 = [[i * j + 2 for j in range(size)] for i in range(size)]
         
-        arr1_arrypy = Array(data1)
-        arr2_arrypy = Array(data2)
+        arr1_arrpy = Array(data1)
+        arr2_arrpy = Array(data2)
         arr1_numpy = np.array(data1)
         arr2_numpy = np.array(data2)
         
         # Matrix multiplication
         benchmark.compare_operations(
             f"Matrix multiplication ({size}x{size})",
-            lambda a1=arr1_arrypy, a2=arr2_arrypy: a1.dot(a2),
+            lambda a1=arr1_arrpy, a2=arr2_arrpy: a1.dot(a2),
             lambda a1=arr1_numpy, a2=arr2_numpy: np.dot(a1, a2)
         )
         
         # Transpose
         benchmark.compare_operations(
             f"Transpose ({size}x{size})",
-            lambda a=arr1_arrypy: a.T,
+            lambda a=arr1_arrpy: a.T,
             lambda a=arr1_numpy: a.T
         )
     
     # Chain operations
     size = 10
     data = [[i + j + 1 for j in range(size)] for i in range(size)]
-    arr_arrypy = Array(data)
+    arr_arrpy = Array(data)
     arr_numpy = np.array(data)
     
-    def chain_operations_arrypy():
-        return (arr_arrypy.T).dot(arr_arrypy)
+    def chain_operations_arrpy():
+        return (arr_arrpy.T).dot(arr_arrpy)
     
     def chain_operations_numpy():
         return np.dot(arr_numpy.T, arr_numpy)
     
     benchmark.compare_operations(
         f"Chain operations: A.T @ A ({size}x{size})",
-        chain_operations_arrypy,
+        chain_operations_arrpy,
         chain_operations_numpy
     )
     
@@ -251,38 +251,38 @@ def benchmark_aggregation_patterns():
     # Test different array sizes
     for size in [100, 1000, 10000]:
         data = list(range(size))
-        arr_arrypy = Array(data)
+        arr_arrpy = Array(data)
         arr_numpy = np.array(data)
         
         # Sum
         benchmark.compare_operations(
             f"Sum ({size} elements)",
-            lambda a=arr_arrypy: a.sum(),
+            lambda a=arr_arrpy: a.sum(),
             lambda a=arr_numpy: a.sum()
         )
         
         # Mean
         benchmark.compare_operations(
             f"Mean ({size} elements)",
-            lambda a=arr_arrypy: a.mean(),
+            lambda a=arr_arrpy: a.mean(),
             lambda a=arr_numpy: a.mean()
         )
     
     # 2D aggregations
     for size in [10, 50, 100]:
         data = [[i + j for j in range(size)] for i in range(size)]
-        arr_arrypy = Array(data)
+        arr_arrpy = Array(data)
         arr_numpy = np.array(data)
         
         benchmark.compare_operations(
             f"2D Sum ({size}x{size})",
-            lambda a=arr_arrypy: a.sum(),
+            lambda a=arr_arrpy: a.sum(),
             lambda a=arr_numpy: a.sum()
         )
         
         benchmark.compare_operations(
             f"2D Mean ({size}x{size})",
-            lambda a=arr_arrypy: a.mean(),
+            lambda a=arr_arrpy: a.mean(),
             lambda a=arr_numpy: a.mean()
         )
     
@@ -306,12 +306,12 @@ def benchmark_reshape_patterns():
     
     for total_size, new_shape, description in test_cases:
         data = list(range(total_size))
-        arr_arrypy = Array(data)
+        arr_arrpy = Array(data)
         arr_numpy = np.array(data)
         
         benchmark.compare_operations(
             f"Reshape {description} ({total_size} -> {new_shape})",
-            lambda a=arr_arrypy, s=new_shape: a.reshape(s),
+            lambda a=arr_arrpy, s=new_shape: a.reshape(s),
             lambda a=arr_numpy, s=new_shape: a.reshape(s)
         )
     
@@ -336,11 +336,11 @@ def generate_performance_report(benchmarks):
             all_speedups.append(speedup)
             category_speedups.append(speedup)
             
-            arrypy_time = results['arrypy']['mean']
+            arrpy_time = results['arrpy']['mean']
             numpy_time = results['numpy']['mean']
             
             print(f"{test_name:40} | numpy {speedup:6.2f}x faster | "
-                  f"arrypy: {arrypy_time:.6f}s | numpy: {numpy_time:.6f}s")
+                  f"arrpy: {arrpy_time:.6f}s | numpy: {numpy_time:.6f}s")
         
         if category_speedups:
             category_summaries[category_name] = {

@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from arrypy import Array
+from arrpy import Array
 
 
 class TestArrayInitialization:

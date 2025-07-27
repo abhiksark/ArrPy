@@ -1,9 +1,9 @@
 """
-Error handling examples for arrypy - demonstrating various error conditions
+Error handling examples for arrpy - demonstrating various error conditions
 and how to handle them gracefully
 """
 
-from arrypy import Array
+from arrpy import Array
 
 def initialization_errors():
     """Demonstrate initialization error handling"""

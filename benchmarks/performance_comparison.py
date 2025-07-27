@@ -1,10 +1,10 @@
 """
-Comprehensive performance benchmarks comparing arrypy with numpy
+Comprehensive performance benchmarks comparing arrpy with numpy
 """
 
 import time
 import numpy as np
-from arrypy import Array
+from arrpy import Array
 import gc
 from functools import wraps
 
@@ -25,14 +25,14 @@ class PerformanceBenchmark:
     def __init__(self):
         self.results = {}
         
-    def run_benchmark(self, name, arrypy_func, numpy_func, *args, **kwargs):
-        """Run a benchmark comparing arrypy and numpy functions"""
+    def run_benchmark(self, name, arrpy_func, numpy_func, *args, **kwargs):
+        """Run a benchmark comparing arrpy and numpy functions"""
         print(f"\n=== {name} ===")
         
-        # Benchmark arrypy
+        # Benchmark arrpy
         @benchmark
-        def arrypy_test():
-            return arrypy_func(*args, **kwargs)
+        def arrpy_test():
+            return arrpy_func(*args, **kwargs)
         
         # Benchmark numpy
         @benchmark
@@ -40,32 +40,32 @@ class PerformanceBenchmark:
             return numpy_func(*args, **kwargs)
         
         # Run tests multiple times for better accuracy
-        arrypy_times = []
+        arrpy_times = []
         numpy_times = []
         
         for _ in range(5):  # Run 5 times
-            _, arrypy_time = arrypy_test()
+            _, arrpy_time = arrpy_test()
             _, numpy_time = numpy_test()
-            arrypy_times.append(arrypy_time)
+            arrpy_times.append(arrpy_time)
             numpy_times.append(numpy_time)
         
         # Calculate averages
-        avg_arrypy = sum(arrypy_times) / len(arrypy_times)
+        avg_arrpy = sum(arrpy_times) / len(arrpy_times)
         avg_numpy = sum(numpy_times) / len(numpy_times)
-        speedup_ratio = avg_arrypy / avg_numpy
+        speedup_ratio = avg_arrpy / avg_numpy
         
-        print(f"arrypy average time: {avg_arrypy:.6f} seconds")
+        print(f"arrpy average time: {avg_arrpy:.6f} seconds")
         print(f"numpy average time:  {avg_numpy:.6f} seconds")
         print(f"numpy is {speedup_ratio:.2f}x faster")
         
         # Store results
         self.results[name] = {
-            'arrypy_time': avg_arrypy,
+            'arrpy_time': avg_arrpy,
             'numpy_time': avg_numpy,
             'speedup_ratio': speedup_ratio
         }
         
-        return avg_arrypy, avg_numpy, speedup_ratio
+        return avg_arrpy, avg_numpy, speedup_ratio
 
 def benchmark_initialization():
     """Benchmark array initialization"""
@@ -111,15 +111,15 @@ def benchmark_indexing():
     
     # Setup test data
     data = [[i + j for j in range(100)] for i in range(100)]
-    arr_arrypy = Array(data)
+    arr_arrpy = Array(data)
     arr_numpy = np.array(data)
     
     # Single element access
-    def arrypy_single_access():
+    def arrpy_single_access():
         result = 0
         for i in range(10):
             for j in range(10):
-                result += arr_arrypy[i, j]
+                result += arr_arrpy[i, j]
         return result
     
     def numpy_single_access():
@@ -131,15 +131,15 @@ def benchmark_indexing():
     
     benchmark.run_benchmark(
         "Single Element Access (100 operations)",
-        arrypy_single_access,
+        arrpy_single_access,
         numpy_single_access
     )
     
     # Row access
-    def arrypy_row_access():
+    def arrpy_row_access():
         rows = []
         for i in range(10):
-            rows.append(arr_arrypy[i])
+            rows.append(arr_arrpy[i])
         return rows
     
     def numpy_row_access():
@@ -150,7 +150,7 @@ def benchmark_indexing():
     
     benchmark.run_benchmark(
         "Row Access (10 operations)",
-        arrypy_row_access,
+        arrpy_row_access,
         numpy_row_access
     )
     
@@ -175,29 +175,29 @@ def benchmark_arithmetic():
         data1 = [[i + j for j in range(size)] for i in range(size)]
         data2 = [[i * j + 1 for j in range(size)] for i in range(size)]
         
-        arr1_arrypy = Array(data1)
-        arr2_arrypy = Array(data2)
+        arr1_arrpy = Array(data1)
+        arr2_arrpy = Array(data2)
         arr1_numpy = np.array(data1)
         arr2_numpy = np.array(data2)
         
         # Addition
         benchmark.run_benchmark(
             f"Addition {size_name}",
-            lambda: arr1_arrypy + arr2_arrypy,
+            lambda: arr1_arrpy + arr2_arrpy,
             lambda: arr1_numpy + arr2_numpy
         )
         
         # Scalar multiplication
         benchmark.run_benchmark(
             f"Scalar Multiplication {size_name}",
-            lambda: arr1_arrypy * 2.5,
+            lambda: arr1_arrpy * 2.5,
             lambda: arr1_numpy * 2.5
         )
         
         # Element-wise multiplication
         benchmark.run_benchmark(
             f"Element-wise Multiplication {size_name}",
-            lambda: arr1_arrypy * arr2_arrypy,
+            lambda: arr1_arrpy * arr2_arrpy,
             lambda: arr1_numpy * arr2_numpy
         )
     
@@ -222,22 +222,22 @@ def benchmark_matrix_operations():
         data1 = [[i + j + 1 for j in range(size)] for i in range(size)]
         data2 = [[i * j + 2 for j in range(size)] for i in range(size)]
         
-        arr1_arrypy = Array(data1)
-        arr2_arrypy = Array(data2)
+        arr1_arrpy = Array(data1)
+        arr2_arrpy = Array(data2)
         arr1_numpy = np.array(data1)
         arr2_numpy = np.array(data2)
         
         # Matrix multiplication (dot product)
         benchmark.run_benchmark(
             f"Matrix Multiplication {size_name}",
-            lambda: arr1_arrypy.dot(arr2_arrypy),
+            lambda: arr1_arrpy.dot(arr2_arrpy),
             lambda: np.dot(arr1_numpy, arr2_numpy)
         )
         
         # Transpose
         benchmark.run_benchmark(
             f"Transpose {size_name}",
-            lambda: arr1_arrypy.T,
+            lambda: arr1_arrpy.T,
             lambda: arr1_numpy.T
         )
     
@@ -261,12 +261,12 @@ def benchmark_reshape():
     for total_size, new_shape, description in sizes_and_shapes:
         data = list(range(total_size))
         
-        arr_arrypy = Array(data)
+        arr_arrpy = Array(data)
         arr_numpy = np.array(data)
         
         benchmark.run_benchmark(
             description,
-            lambda: arr_arrypy.reshape(new_shape),
+            lambda: arr_arrpy.reshape(new_shape),
             lambda: arr_numpy.reshape(new_shape)
         )
     
@@ -290,20 +290,20 @@ def benchmark_aggregations():
     for size, size_name in sizes:
         data = list(range(size))
         
-        arr_arrypy = Array(data)
+        arr_arrpy = Array(data)
         arr_numpy = np.array(data)
         
         # Sum
         benchmark.run_benchmark(
             f"Sum {size_name}",
-            lambda: arr_arrypy.sum(),
+            lambda: arr_arrpy.sum(),
             lambda: arr_numpy.sum()
         )
         
         # Mean
         benchmark.run_benchmark(
             f"Mean {size_name}",
-            lambda: arr_arrypy.mean(),
+            lambda: arr_arrpy.mean(),
             lambda: arr_numpy.mean()
         )
     
@@ -322,20 +322,20 @@ def benchmark_memory_usage():
     for size in sizes:
         data = list(range(size))
         
-        # Measure arrypy memory
-        arr_arrypy = Array(data)
-        arrypy_size = sys.getsizeof(arr_arrypy._data) + sys.getsizeof(arr_arrypy._shape)
+        # Measure arrpy memory
+        arr_arrpy = Array(data)
+        arrpy_size = sys.getsizeof(arr_arrpy._data) + sys.getsizeof(arr_arrpy._shape)
         
         # Measure numpy memory
         arr_numpy = np.array(data)
         numpy_size = arr_numpy.nbytes
         
-        memory_ratio = arrypy_size / numpy_size
+        memory_ratio = arrpy_size / numpy_size
         
         print(f"\nArray size: {size} elements")
-        print(f"arrypy memory: {arrypy_size:,} bytes")
+        print(f"arrpy memory: {arrpy_size:,} bytes")
         print(f"numpy memory:  {numpy_size:,} bytes")
-        print(f"arrypy uses {memory_ratio:.2f}x more memory")
+        print(f"arrpy uses {memory_ratio:.2f}x more memory")
 
 def run_comprehensive_benchmarks():
     """Run all benchmarks and generate summary report"""
@@ -388,9 +388,9 @@ def run_comprehensive_benchmarks():
         print(f"  Maximum speedup: numpy is {max_speedup:.2f}x faster")
     
     print(f"\nConclusions:")
-    print(f"  • numpy consistently outperforms arrypy due to C implementation")
-    print(f"  • arrypy provides similar functionality with pure Python")
-    print(f"  • Use arrypy for learning, prototyping, or when numpy isn't available")
+    print(f"  • numpy consistently outperforms arrpy due to C implementation")
+    print(f"  • arrpy provides similar functionality with pure Python")
+    print(f"  • Use arrpy for learning, prototyping, or when numpy isn't available")
     print(f"  • Use numpy for production code requiring high performance")
 
 if __name__ == "__main__":

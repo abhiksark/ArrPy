@@ -1,8 +1,8 @@
 """
-Data analysis examples using arrypy for basic statistical operations
+Data analysis examples using arrpy for basic statistical operations
 """
 
-from arrypy import Array
+from arrpy import Array
 
 def statistical_analysis():
     """Demonstrate basic statistical analysis"""

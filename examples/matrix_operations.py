@@ -1,8 +1,8 @@
 """
-Advanced matrix operations examples using arrypy
+Advanced matrix operations examples using arrpy
 """
 
-from arrypy import Array
+from arrpy import Array
 
 def linear_algebra_examples():
     """Demonstrate linear algebra operations"""

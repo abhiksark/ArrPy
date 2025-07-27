@@ -1,11 +1,11 @@
 # Examples
 
-This directory contains comprehensive examples demonstrating the capabilities of the arrypy library.
+This directory contains comprehensive examples demonstrating the capabilities of the arrpy library.
 
 ## Example Files
 
 ### 1. `basic_usage.py`
-**Demonstrates fundamental arrypy operations:**
+**Demonstrates fundamental arrpy operations:**
 - Array creation (1D, 2D, 3D)
 - Indexing and element access
 - Basic arithmetic operations (addition, subtraction, multiplication, division)
@@ -141,4 +141,4 @@ Feel free to modify these examples to:
 - Add your own error handling scenarios
 - Create new analysis workflows
 
-These examples serve as both documentation and starting points for your own arrypy-based projects.
+These examples serve as both documentation and starting points for your own arrpy-based projects.

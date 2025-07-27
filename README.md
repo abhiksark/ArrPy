@@ -1,10 +1,10 @@
-# arrypy
+# arrpy
 
 A pure Python implementation that mimics the core functionality of NumPy's ndarray.
 
 ## Description
 
-`arrypy` provides a lightweight, dependency-free alternative to NumPy arrays for basic array operations. It implements a pure Python Array class that supports multi-dimensional arrays, indexing, arithmetic operations, matrix operations, and more.
+`arrpy` provides a lightweight, dependency-free alternative to NumPy arrays for basic array operations. It implements a pure Python Array class that supports multi-dimensional arrays, indexing, arithmetic operations, matrix operations, and more.
 
 ## Features
 
@@ -24,8 +24,8 @@ A pure Python implementation that mimics the core functionality of NumPy's ndarr
 Clone the repository and install:
 
 ```bash
-git clone https://github.com/yourusername/arrypy.git
-cd arrypy
+git clone https://github.com/yourusername/arrpy.git
+cd arrpy
 pip install .
 ```
 
@@ -46,7 +46,7 @@ pip install -r requirements.txt
 ## Usage
 
 ```python
-from arrypy import Array
+from arrpy import Array
 
 # Create arrays
 a = Array([1, 2, 3])
@@ -127,8 +127,8 @@ The test suite validates all functionality against NumPy's behavior to ensure co
 ### Project Structure
 
 ```
-arrypy-project/
-├── arrypy/
+arrpy-project/
+├── arrpy/
 │   ├── __init__.py
 │   └── main.py
 ├── tests/

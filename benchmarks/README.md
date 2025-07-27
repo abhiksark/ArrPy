@@ -1,6 +1,6 @@
 # Performance Benchmarks
 
-This directory contains comprehensive performance benchmarks comparing arrypy with numpy across all supported functionalities.
+This directory contains comprehensive performance benchmarks comparing arrpy with numpy across all supported functionalities.
 
 ## Benchmark Files
 
@@ -94,7 +94,7 @@ done
 
 **Required:**
 - `numpy` - for comparison baseline
-- `arrypy` - the package being benchmarked
+- `arrpy` - the package being benchmarked
 
 **Optional:**
 - `matplotlib` - for generating scalability plots (only in scalability_test.py)
@@ -115,7 +115,7 @@ pip install numpy matplotlib
 - SIMD and vectorization optimizations
 - Mature, highly optimized algorithms
 
-**arrypy characteristics:**
+**arrpy characteristics:**
 - Pure Python implementation
 - Readable and educational code
 - Similar API to numpy
@@ -142,7 +142,7 @@ pip install numpy matplotlib
 
 ## Benchmark Insights
 
-### When to Use arrypy
+### When to Use arrpy
 - Educational purposes and learning NumPy concepts
 - Small datasets (< 1000 elements)
 - Prototyping and algorithm development
@@ -170,7 +170,7 @@ def your_new_benchmark():
     
     benchmark.run_benchmark(
         "Your Test Name",
-        lambda: arrypy_operation(test_data),
+        lambda: arrpy_operation(test_data),
         lambda: numpy_operation(test_data)
     )
     
@@ -185,7 +185,7 @@ def benchmark_your_operation():
     # Your test setup
     benchmark.compare_operations(
         "Your Operation Name",
-        arrypy_func,
+        arrpy_func,
         numpy_func,
         *args
     )
@@ -203,7 +203,7 @@ def test_your_scaling():
     benchmark.test_scaling(
         "Your Operation",
         sizes,
-        lambda size: arrypy_func(size),
+        lambda size: arrpy_func(size),
         lambda size: numpy_func(size)
     )
     
@@ -222,7 +222,7 @@ def test_your_scaling():
 ### Reading Performance Reports
 
 ```
-Operation Name                     | numpy speedup | arrypy time | numpy time
+Operation Name                     | numpy speedup | arrpy time | numpy time
 Array Creation (100x100)          | 15.32x faster | 0.012000s   | 0.000783s
 ```
 
@@ -240,11 +240,11 @@ Array Creation (100x100)          | 15.32x faster | 0.012000s   | 0.000783s
 ### Interpreting Complexity Analysis
 
 ```
-Estimated complexity - arrypy: O(n^2.1), numpy: O(n^2.0)
+Estimated complexity - arrpy: O(n^2.1), numpy: O(n^2.0)
 ```
 
 - Shows theoretical performance scaling
-- arrypy may have higher complexity due to Python overhead
+- arrpy may have higher complexity due to Python overhead
 - Matrix operations should show O(n³) for both implementations
 
 ## Troubleshooting
@@ -252,7 +252,7 @@ Estimated complexity - arrypy: O(n^2.1), numpy: O(n^2.0)
 ### Common Issues
 
 1. **Inconsistent results**: Ensure system is not under load during benchmarking
-2. **Import errors**: Verify arrypy package is properly installed
+2. **Import errors**: Verify arrpy package is properly installed
 3. **Memory errors**: Reduce array sizes for large-scale tests
 4. **Plot generation fails**: Install matplotlib or skip plotting
 
@@ -273,4 +273,4 @@ When adding new benchmarks:
 4. Consider both small and large scale tests
 5. Include statistical analysis where appropriate
 
-The benchmark suite helps users understand the performance trade-offs between arrypy and numpy across different use cases and array sizes.
+The benchmark suite helps users understand the performance trade-offs between arrpy and numpy across different use cases and array sizes.

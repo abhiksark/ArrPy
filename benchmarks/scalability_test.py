@@ -1,10 +1,10 @@
 """
-Scalability benchmarks to test how arrypy and numpy performance scales with array size
+Scalability benchmarks to test how arrpy and numpy performance scales with array size
 """
 
 import time
 import numpy as np
-from arrypy import Array
+from arrpy import Array
 import matplotlib.pyplot as plt
 import gc
 from statistics import mean
@@ -24,35 +24,35 @@ class ScalabilityBenchmark:
             times.append(end - start)
         return mean(times)
     
-    def test_scaling(self, operation_name, sizes, arrypy_func, numpy_func):
+    def test_scaling(self, operation_name, sizes, arrpy_func, numpy_func):
         """Test how an operation scales with input size"""
         print(f"\nTesting scalability: {operation_name}")
         print(f"Sizes: {sizes}")
         
-        arrypy_times = []
+        arrpy_times = []
         numpy_times = []
         
         for size in sizes:
             print(f"  Testing size {size}...", end=" ")
             
-            # Test arrypy
-            arrypy_time = self.time_operation(lambda: arrypy_func(size))
-            arrypy_times.append(arrypy_time)
+            # Test arrpy
+            arrpy_time = self.time_operation(lambda: arrpy_func(size))
+            arrpy_times.append(arrpy_time)
             
             # Test numpy
             numpy_time = self.time_operation(lambda: numpy_func(size))
             numpy_times.append(numpy_time)
             
-            speedup = arrypy_time / numpy_time
+            speedup = arrpy_time / numpy_time
             print(f"numpy {speedup:.1f}x faster")
         
         self.results[operation_name] = {
             'sizes': sizes,
-            'arrypy_times': arrypy_times,
+            'arrpy_times': arrpy_times,
             'numpy_times': numpy_times
         }
         
-        return sizes, arrypy_times, numpy_times
+        return sizes, arrpy_times, numpy_times
 
 def test_creation_scaling():
     """Test how array creation scales with size"""
@@ -65,7 +65,7 @@ def test_creation_scaling():
     # 1D array creation
     sizes_1d = [100, 500, 1000, 2000, 5000, 10000]
     
-    def create_arrypy_1d(size):
+    def create_arrpy_1d(size):
         data = list(range(size))
         return Array(data)
     
@@ -76,14 +76,14 @@ def test_creation_scaling():
     benchmark.test_scaling(
         "1D Array Creation",
         sizes_1d,
-        create_arrypy_1d,
+        create_arrpy_1d,
         create_numpy_1d
     )
     
     # 2D array creation (square matrices)
     sizes_2d = [10, 20, 50, 75, 100, 150]  # These are edge lengths, total elements = size^2
     
-    def create_arrypy_2d(size):
+    def create_arrpy_2d(size):
         data = [[i + j for j in range(size)] for i in range(size)]
         return Array(data)
     
@@ -94,7 +94,7 @@ def test_creation_scaling():
     benchmark.test_scaling(
         "2D Array Creation (Square)",
         sizes_2d,
-        create_arrypy_2d,
+        create_arrpy_2d,
         create_numpy_2d
     )
     
@@ -117,42 +117,42 @@ def test_arithmetic_scaling():
         data2 = [[i * j + 1 for j in range(size)] for i in range(size)]
         
         test_arrays[size] = {
-            'arrypy': (Array(data1), Array(data2)),
+            'arrpy': (Array(data1), Array(data2)),
             'numpy': (np.array(data1), np.array(data2))
         }
     
     # Test addition scaling
-    def add_arrypy(size):
-        arr1, arr2 = test_arrays[size]['arrypy']
+    def add_arrpy(size):
+        arr1, arr2 = test_arrays[size]['arrpy']
         return arr1 + arr2
     
     def add_numpy(size):
         arr1, arr2 = test_arrays[size]['numpy']
         return arr1 + arr2
     
-    benchmark.test_scaling("Addition", sizes, add_arrypy, add_numpy)
+    benchmark.test_scaling("Addition", sizes, add_arrpy, add_numpy)
     
     # Test multiplication scaling
-    def mul_arrypy(size):
-        arr1, arr2 = test_arrays[size]['arrypy']
+    def mul_arrpy(size):
+        arr1, arr2 = test_arrays[size]['arrpy']
         return arr1 * arr2
     
     def mul_numpy(size):
         arr1, arr2 = test_arrays[size]['numpy']
         return arr1 * arr2
     
-    benchmark.test_scaling("Multiplication", sizes, mul_arrypy, mul_numpy)
+    benchmark.test_scaling("Multiplication", sizes, mul_arrpy, mul_numpy)
     
     # Test scalar multiplication scaling
-    def scalar_mul_arrypy(size):
-        arr1, _ = test_arrays[size]['arrypy']
+    def scalar_mul_arrpy(size):
+        arr1, _ = test_arrays[size]['arrpy']
         return arr1 * 3.14159
     
     def scalar_mul_numpy(size):
         arr1, _ = test_arrays[size]['numpy']
         return arr1 * 3.14159
     
-    benchmark.test_scaling("Scalar Multiplication", sizes, scalar_mul_arrypy, scalar_mul_numpy)
+    benchmark.test_scaling("Scalar Multiplication", sizes, scalar_mul_arrpy, scalar_mul_numpy)
     
     return benchmark
 
@@ -173,31 +173,31 @@ def test_matrix_operations_scaling():
         data2 = [[i * j + 2 for j in range(size)] for i in range(size)]
         
         test_matrices[size] = {
-            'arrypy': (Array(data1), Array(data2)),
+            'arrpy': (Array(data1), Array(data2)),
             'numpy': (np.array(data1), np.array(data2))
         }
     
     # Matrix multiplication
-    def matmul_arrypy(size):
-        arr1, arr2 = test_matrices[size]['arrypy']
+    def matmul_arrpy(size):
+        arr1, arr2 = test_matrices[size]['arrpy']
         return arr1.dot(arr2)
     
     def matmul_numpy(size):
         arr1, arr2 = test_matrices[size]['numpy']
         return np.dot(arr1, arr2)
     
-    benchmark.test_scaling("Matrix Multiplication", sizes, matmul_arrypy, matmul_numpy)
+    benchmark.test_scaling("Matrix Multiplication", sizes, matmul_arrpy, matmul_numpy)
     
     # Transpose scaling
-    def transpose_arrypy(size):
-        arr1, _ = test_matrices[size]['arrypy']
+    def transpose_arrpy(size):
+        arr1, _ = test_matrices[size]['arrpy']
         return arr1.T
     
     def transpose_numpy(size):
         arr1, _ = test_matrices[size]['numpy']
         return arr1.T
     
-    benchmark.test_scaling("Transpose", sizes, transpose_arrypy, transpose_numpy)
+    benchmark.test_scaling("Transpose", sizes, transpose_arrpy, transpose_numpy)
     
     return benchmark
 
@@ -216,27 +216,27 @@ def test_aggregation_scaling():
     for size in sizes_1d:
         data = list(range(size))
         test_arrays_1d[size] = {
-            'arrypy': Array(data),
+            'arrpy': Array(data),
             'numpy': np.array(data)
         }
     
     # Sum scaling
-    def sum_arrypy(size):
-        return test_arrays_1d[size]['arrypy'].sum()
+    def sum_arrpy(size):
+        return test_arrays_1d[size]['arrpy'].sum()
     
     def sum_numpy(size):
         return test_arrays_1d[size]['numpy'].sum()
     
-    benchmark.test_scaling("1D Sum", sizes_1d, sum_arrypy, sum_numpy)
+    benchmark.test_scaling("1D Sum", sizes_1d, sum_arrpy, sum_numpy)
     
     # Mean scaling
-    def mean_arrypy(size):
-        return test_arrays_1d[size]['arrypy'].mean()
+    def mean_arrpy(size):
+        return test_arrays_1d[size]['arrpy'].mean()
     
     def mean_numpy(size):
         return test_arrays_1d[size]['numpy'].mean()
     
-    benchmark.test_scaling("1D Mean", sizes_1d, mean_arrypy, mean_numpy)
+    benchmark.test_scaling("1D Mean", sizes_1d, mean_arrpy, mean_numpy)
     
     # 2D aggregations
     sizes_2d = [10, 25, 50, 75, 100, 150]
@@ -245,18 +245,18 @@ def test_aggregation_scaling():
     for size in sizes_2d:
         data = [[i + j for j in range(size)] for i in range(size)]
         test_arrays_2d[size] = {
-            'arrypy': Array(data),
+            'arrpy': Array(data),
             'numpy': np.array(data)
         }
     
     # 2D Sum scaling
-    def sum_2d_arrypy(size):
-        return test_arrays_2d[size]['arrypy'].sum()
+    def sum_2d_arrpy(size):
+        return test_arrays_2d[size]['arrpy'].sum()
     
     def sum_2d_numpy(size):
         return test_arrays_2d[size]['numpy'].sum()
     
-    benchmark.test_scaling("2D Sum", sizes_2d, sum_2d_arrypy, sum_2d_numpy)
+    benchmark.test_scaling("2D Sum", sizes_2d, sum_2d_arrpy, sum_2d_numpy)
     
     return benchmark
 
@@ -274,13 +274,13 @@ def test_indexing_scaling():
     for size in sizes:
         data = [[i + j for j in range(size)] for i in range(size)]
         test_arrays[size] = {
-            'arrypy': Array(data),
+            'arrpy': Array(data),
             'numpy': np.array(data)
         }
     
     # Single element access (repeated)
-    def single_access_arrypy(size):
-        arr = test_arrays[size]['arrypy']
+    def single_access_arrpy(size):
+        arr = test_arrays[size]['arrpy']
         total = 0
         for i in range(min(100, size)):  # Access up to 100 elements
             for j in range(min(100, size)):
@@ -295,11 +295,11 @@ def test_indexing_scaling():
                 total += arr[i, j]
         return total
     
-    benchmark.test_scaling("Single Element Access (100 ops)", sizes, single_access_arrypy, single_access_numpy)
+    benchmark.test_scaling("Single Element Access (100 ops)", sizes, single_access_arrpy, single_access_numpy)
     
     # Row access
-    def row_access_arrypy(size):
-        arr = test_arrays[size]['arrypy']
+    def row_access_arrpy(size):
+        arr = test_arrays[size]['arrpy']
         rows = []
         for i in range(min(10, size)):  # Access up to 10 rows
             rows.append(arr[i])
@@ -312,7 +312,7 @@ def test_indexing_scaling():
             rows.append(arr[i])
         return rows
     
-    benchmark.test_scaling("Row Access (10 ops)", sizes, row_access_arrypy, row_access_numpy)
+    benchmark.test_scaling("Row Access (10 ops)", sizes, row_access_arrpy, row_access_numpy)
     
     return benchmark
 
@@ -335,13 +335,13 @@ def test_reshape_scaling():
         new_shape = (sqrt_size, size // sqrt_size)
         
         test_arrays[size] = {
-            'arrypy': Array(data),
+            'arrpy': Array(data),
             'numpy': np.array(data),
             'shape': new_shape
         }
     
-    def reshape_arrypy(size):
-        arr = test_arrays[size]['arrypy']
+    def reshape_arrpy(size):
+        arr = test_arrays[size]['arrpy']
         shape = test_arrays[size]['shape']
         return arr.reshape(shape)
     
@@ -350,7 +350,7 @@ def test_reshape_scaling():
         shape = test_arrays[size]['shape']
         return arr.reshape(shape)
     
-    benchmark.test_scaling("1D to 2D Reshape", sizes, reshape_arrypy, reshape_numpy)
+    benchmark.test_scaling("1D to 2D Reshape", sizes, reshape_arrpy, reshape_numpy)
     
     return benchmark
 
@@ -362,32 +362,32 @@ def analyze_complexity(benchmark_results):
     
     for operation_name, results in benchmark_results.items():
         sizes = results['sizes']
-        arrypy_times = results['arrypy_times']
+        arrpy_times = results['arrpy_times']
         numpy_times = results['numpy_times']
         
         print(f"\n{operation_name}:")
-        print(f"{'Size':>8} {'arrypy (s)':>12} {'numpy (s)':>12} {'Speedup':>10} {'Ratio Growth':>15}")
+        print(f"{'Size':>8} {'arrpy (s)':>12} {'numpy (s)':>12} {'Speedup':>10} {'Ratio Growth':>15}")
         print("-" * 70)
         
-        prev_arrypy_time = None
+        prev_arrpy_time = None
         prev_numpy_time = None
         prev_size = None
         
-        for i, (size, arrypy_time, numpy_time) in enumerate(zip(sizes, arrypy_times, numpy_times)):
-            speedup = arrypy_time / numpy_time
+        for i, (size, arrpy_time, numpy_time) in enumerate(zip(sizes, arrpy_times, numpy_times)):
+            speedup = arrpy_time / numpy_time
             
-            if prev_arrypy_time is not None and prev_size is not None:
+            if prev_arrpy_time is not None and prev_size is not None:
                 size_ratio = size / prev_size
-                arrypy_growth = arrypy_time / prev_arrypy_time
+                arrpy_growth = arrpy_time / prev_arrpy_time
                 numpy_growth = numpy_time / prev_numpy_time
-                growth_ratio = arrypy_growth / numpy_growth
+                growth_ratio = arrpy_growth / numpy_growth
                 growth_str = f"{growth_ratio:.2f}"
             else:
                 growth_str = "baseline"
             
-            print(f"{size:>8} {arrypy_time:>12.6f} {numpy_time:>12.6f} {speedup:>10.2f}x {growth_str:>15}")
+            print(f"{size:>8} {arrpy_time:>12.6f} {numpy_time:>12.6f} {speedup:>10.2f}x {growth_str:>15}")
             
-            prev_arrypy_time = arrypy_time
+            prev_arrpy_time = arrpy_time
             prev_numpy_time = numpy_time
             prev_size = size
         
@@ -395,19 +395,19 @@ def analyze_complexity(benchmark_results):
         if len(sizes) >= 3:
             # Compare last and first measurements
             size_growth = sizes[-1] / sizes[0]
-            arrypy_time_growth = arrypy_times[-1] / arrypy_times[0]
+            arrpy_time_growth = arrpy_times[-1] / arrpy_times[0]
             numpy_time_growth = numpy_times[-1] / numpy_times[0]
             
             # Rough complexity estimation
             import math
             log_size_growth = math.log(size_growth)
-            log_arrypy_growth = math.log(arrypy_time_growth)
+            log_arrpy_growth = math.log(arrpy_time_growth)
             log_numpy_growth = math.log(numpy_time_growth)
             
-            arrypy_complexity = log_arrypy_growth / log_size_growth
+            arrpy_complexity = log_arrpy_growth / log_size_growth
             numpy_complexity = log_numpy_growth / log_size_growth
             
-            print(f"Estimated complexity - arrypy: O(n^{arrypy_complexity:.1f}), "
+            print(f"Estimated complexity - arrpy: O(n^{arrpy_complexity:.1f}), "
                   f"numpy: O(n^{numpy_complexity:.1f})")
 
 def generate_scalability_plots(all_results):
@@ -421,7 +421,7 @@ def generate_scalability_plots(all_results):
         
         # Create subplots for different operation categories
         fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-        fig.suptitle('arrypy vs numpy Scalability Comparison', fontsize=16)
+        fig.suptitle('arrpy vs numpy Scalability Comparison', fontsize=16)
         
         plot_configs = [
             ("1D Array Creation", 0, 0),
@@ -444,10 +444,10 @@ def generate_scalability_plots(all_results):
             
             if results:
                 sizes = results['sizes']
-                arrypy_times = results['arrypy_times']
+                arrpy_times = results['arrpy_times']
                 numpy_times = results['numpy_times']
                 
-                ax.loglog(sizes, arrypy_times, 'o-', label='arrypy', linewidth=2)
+                ax.loglog(sizes, arrpy_times, 'o-', label='arrpy', linewidth=2)
                 ax.loglog(sizes, numpy_times, 's-', label='numpy', linewidth=2)
                 ax.set_xlabel('Array Size')
                 ax.set_ylabel('Time (seconds)')
@@ -505,7 +505,7 @@ def run_scalability_tests():
     print("• Memory allocation overhead affects creation and reshape operations")
     print("• numpy's optimized C implementation provides consistent advantages")
     print("• Performance gaps tend to increase with larger array sizes")
-    print("• arrypy is suitable for small-medium arrays and educational purposes")
+    print("• arrpy is suitable for small-medium arrays and educational purposes")
     print("• Use numpy for production workloads requiring high performance")
 
 if __name__ == "__main__":

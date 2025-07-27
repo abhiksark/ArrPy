@@ -1,8 +1,8 @@
 """
-Basic usage examples for arrypy Array class
+Basic usage examples for arrpy Array class
 """
 
-from arrypy import Array
+from arrpy import Array
 
 def basic_array_creation():
     """Demonstrate basic array creation and properties"""
