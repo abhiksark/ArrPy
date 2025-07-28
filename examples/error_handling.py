@@ -3,7 +3,7 @@ Error handling examples for arrpy - demonstrating various error conditions
 and how to handle them gracefully
 """
 
-from arrpy import Array
+from arrpy import Array, array, sin, log, sqrt, arcsin, concatenate, reshape
 
 def initialization_errors():
     """Demonstrate initialization error handling"""
@@ -259,6 +259,75 @@ def aggregation_errors():
     
     print()
 
+def mathematical_function_errors():
+    """Demonstrate error handling for mathematical functions"""
+    print("=== Mathematical Function Error Handling ===")
+    
+    # Test trigonometric functions
+    print("Testing trigonometric functions:")
+    valid_data = array([0, 0.5, 1])
+    try:
+        sin_result = sin(valid_data)
+        print(f"sin({valid_data}): {sin_result}")
+    except Exception as e:
+        print(f"sin error: {type(e).__name__}: {e}")
+    
+    # Test logarithmic functions with invalid domain
+    print("\nTesting logarithmic functions with invalid values:")
+    try:
+        invalid_log = log(array([-1, 0, 1]))
+        print(f"This might not work: {invalid_log}")
+    except Exception as e:
+        print(f"✓ Caught log error: {type(e).__name__}: {e}")
+    
+    # Test square root with negative values
+    print("\nTesting square root with negative values:")
+    try:
+        invalid_sqrt = sqrt(array([-4, -1, 1]))
+        print(f"This might not work: {invalid_sqrt}")
+    except Exception as e:
+        print(f"✓ Caught sqrt error: {type(e).__name__}: {e}")
+    
+    # Test inverse trigonometric with out-of-range values
+    print("\nTesting arcsin with out-of-range values:")
+    try:
+        invalid_arcsin = arcsin(array([2, 3]))
+        print(f"This might not work: {invalid_arcsin}")
+    except Exception as e:
+        print(f"✓ Caught arcsin error: {type(e).__name__}: {e}")
+    print()
+
+def concatenation_errors():
+    """Demonstrate concatenation error handling"""
+    print("=== Concatenation Error Handling ===")
+    
+    # Valid concatenation
+    arr1 = array([1, 2, 3])
+    arr2 = array([4, 5, 6])
+    try:
+        valid_concat = concatenate([arr1, arr2])
+        print(f"Valid concatenation: {valid_concat}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+    
+    # Shape mismatch
+    print("\nTesting shape mismatch in concatenation:")
+    arr3 = array([[1, 2]])
+    try:
+        invalid_concat = concatenate([arr1, arr3])  # 1D vs 2D
+        print(f"This shouldn't work: {invalid_concat}")
+    except Exception as e:
+        print(f"✓ Caught expected error: {type(e).__name__}")
+    
+    # Empty list concatenation
+    print("\nTesting empty concatenation:")
+    try:
+        empty_concat = concatenate([])
+        print(f"This might not work: {empty_concat}")
+    except Exception as e:
+        print(f"✓ Caught expected error: {type(e).__name__}")
+    print()
+
 def comprehensive_error_handling_example():
     """A comprehensive example showing defensive programming"""
     print("=== Comprehensive Error Handling Example ===")
@@ -325,6 +394,8 @@ if __name__ == "__main__":
     transpose_errors()
     dot_product_errors()
     aggregation_errors()
+    mathematical_function_errors()
+    concatenation_errors()
     comprehensive_error_handling_example()
     
     print("=== All error handling examples completed! ===")

@@ -2,7 +2,7 @@
 Data analysis examples using arrpy for basic statistical operations
 """
 
-from arrpy import Array
+from arrpy import Array, array, min, max, std, var, median, percentile, concatenate
 
 def statistical_analysis():
     """Demonstrate basic statistical analysis"""
@@ -177,11 +177,74 @@ def growth_analysis():
         print(f"{units[i]}: {year_growth[i]:.1f}%")
     print()
 
+def advanced_statistical_analysis():
+    """Demonstrate advanced statistical functions"""
+    print("=== Advanced Statistical Analysis ===")
+    
+    # Customer satisfaction scores
+    satisfaction_scores = array([4.2, 3.8, 4.5, 3.2, 4.8, 3.9, 4.1, 4.3, 3.7, 4.6])
+    print(f"Satisfaction scores: {satisfaction_scores}")
+    
+    # Calculate comprehensive statistics
+    mean_score = satisfaction_scores.mean()
+    min_score = min(satisfaction_scores)
+    max_score = max(satisfaction_scores)
+    std_score = std(satisfaction_scores)
+    var_score = var(satisfaction_scores)
+    median_score = median(satisfaction_scores)
+    
+    print(f"Mean: {mean_score:.2f}")
+    print(f"Min: {min_score}")
+    print(f"Max: {max_score}")
+    print(f"Standard deviation: {std_score:.2f}")
+    print(f"Variance: {var_score:.2f}")
+    print(f"Median: {median_score:.2f}")
+    
+    # Percentile analysis
+    p25 = percentile(satisfaction_scores, 25)
+    p75 = percentile(satisfaction_scores, 75)
+    iqr = p75 - p25
+    
+    print(f"\nPercentile analysis:")
+    print(f"25th percentile: {p25:.2f}")
+    print(f"75th percentile: {p75:.2f}")
+    print(f"Interquartile range: {iqr:.2f}")
+    print()
+
+def time_series_concatenation():
+    """Demonstrate time series data concatenation"""
+    print("=== Time Series Data Concatenation ===")
+    
+    # Monthly data for different quarters
+    q1_data = array([100, 110, 105])  # Jan, Feb, Mar
+    q2_data = array([120, 115, 125])  # Apr, May, Jun
+    q3_data = array([130, 135, 140])  # Jul, Aug, Sep
+    q4_data = array([145, 150, 155])  # Oct, Nov, Dec
+    
+    print(f"Q1 data: {q1_data}")
+    print(f"Q2 data: {q2_data}")
+    print(f"Q3 data: {q3_data}")
+    print(f"Q4 data: {q4_data}")
+    
+    # Concatenate into full year
+    full_year = concatenate([q1_data, q2_data, q3_data, q4_data])
+    print(f"Full year data: {full_year}")
+    
+    # Calculate year statistics
+    year_mean = full_year.mean()
+    year_growth = ((full_year[-1] - full_year[0]) / full_year[0]) * 100
+    
+    print(f"Annual average: {year_mean:.1f}")
+    print(f"Year-over-year growth: {year_growth:.1f}%")
+    print()
+
 if __name__ == "__main__":
     statistical_analysis()
     grade_matrix_analysis()
     sales_data_analysis()
     financial_calculations()
     growth_analysis()
+    advanced_statistical_analysis()
+    time_series_concatenation()
     
     print("=== All data analysis examples completed! ===")

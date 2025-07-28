@@ -2,7 +2,7 @@
 Basic usage examples for arrpy Array class
 """
 
-from arrpy import Array
+from arrpy import Array, array, zeros, ones, arange, full
 
 def basic_array_creation():
     """Demonstrate basic array creation and properties"""
@@ -127,10 +127,68 @@ def aggregation_examples():
     print(f"Mean: {arr2d.mean()}")
     print()
 
+def enhanced_array_creation():
+    """Demonstrate additional array creation methods"""
+    print("=== Enhanced Array Creation ===")
+    
+    # Using array() function (NumPy-style)
+    arr = array([1, 2, 3, 4])
+    print(f"Using array(): {arr}")
+    
+    # Create zeros and ones arrays
+    zeros_arr = zeros((2, 3))
+    ones_arr = ones(4)
+    print(f"Zeros array: {zeros_arr}")
+    print(f"Ones array: {ones_arr}")
+    
+    # Create filled array
+    filled = full((2, 2), 7)
+    print(f"Filled with 7: {filled}")
+    
+    # Create range array
+    range_arr = arange(0, 10, 2)
+    print(f"Range array: {range_arr}")
+    print()
+
+def logical_and_comparison_operations():
+    """Demonstrate comparison and logical operations"""
+    print("=== Comparison and Logical Operations ===")
+    
+    arr1 = array([1, 2, 3, 4, 5])
+    arr2 = array([2, 2, 2, 4, 6])
+    
+    print(f"Array 1: {arr1}")
+    print(f"Array 2: {arr2}")
+    
+    # Element-wise comparisons
+    equal = arr1 == arr2
+    greater = arr1 > arr2
+    print(f"Equal: {equal}")
+    print(f"Greater: {greater}")
+    
+    # Scalar comparisons
+    above_3 = arr1 > 3
+    print(f"Above 3: {above_3}")
+    
+    # Boolean arrays for logical operations
+    bool1 = array([True, False, True, False])
+    bool2 = array([True, True, False, False])
+    
+    logical_and = bool1.logical_and(bool2)
+    logical_or = bool1.logical_or(bool2)
+    logical_not = bool1.logical_not()
+    
+    print(f"Logical AND: {logical_and}")
+    print(f"Logical OR: {logical_or}")
+    print(f"Logical NOT: {logical_not}")
+    print()
+
 if __name__ == "__main__":
     basic_array_creation()
+    enhanced_array_creation()
     indexing_examples()
     arithmetic_operations()
+    logical_and_comparison_operations()
     matrix_operations()
     reshape_examples()
     aggregation_examples()

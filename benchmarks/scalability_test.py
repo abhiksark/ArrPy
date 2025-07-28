@@ -117,6 +117,8 @@ def test_creation_scaling():
         create_arrpy_2d,
         create_numpy_2d
     )
+    
+    return benchmark
 
 def test_arithmetic_scaling():
     """Test how arithmetic operations scale with size"""
@@ -171,6 +173,8 @@ def test_arithmetic_scaling():
         return arr1 * 3.14159
     
     benchmark.test_scaling("Scalar Multiplication", sizes, scalar_mul_arrpy, scalar_mul_numpy)
+    
+    return benchmark
 
 def test_matrix_operations_scaling():
     """Test how matrix operations scale with size"""
@@ -214,6 +218,8 @@ def test_matrix_operations_scaling():
         return arr1.T
     
     benchmark.test_scaling("Transpose", sizes, transpose_arrpy, transpose_numpy)
+    
+    return benchmark
 
 def test_aggregation_scaling():
     """Test how aggregation operations scale with size"""
@@ -271,6 +277,8 @@ def test_aggregation_scaling():
         return test_arrays_2d[size]['numpy'].sum()
     
     benchmark.test_scaling("2D Sum", sizes_2d, sum_2d_arrpy, sum_2d_numpy)
+    
+    return benchmark
 
 def test_indexing_scaling():
     """Test how indexing operations scale with size"""
@@ -325,6 +333,8 @@ def test_indexing_scaling():
         return rows
     
     benchmark.test_scaling("Row Access (10 ops)", sizes, row_access_arrpy, row_access_numpy)
+    
+    return benchmark
 
 def test_reshape_scaling():
     """Test how reshape operations scale with size"""
@@ -364,6 +374,8 @@ def test_reshape_scaling():
         return arr.reshape(shape)
     
     benchmark.test_scaling("1D to 2D Reshape", sizes, reshape_arrpy, reshape_numpy)
+    
+    return benchmark
 
 def test_new_features_scaling():
     """Test how new features scale with size"""
@@ -473,6 +485,8 @@ def test_new_features_scaling():
         return np.sin(test_arrays_math[size]['numpy_trig'])
     
     benchmark.test_scaling("sin", sizes_math, sin_arrpy, sin_numpy)
+    
+    return benchmark
 
 def analyze_complexity(benchmark_results):
     """Analyze the computational complexity from benchmark results"""

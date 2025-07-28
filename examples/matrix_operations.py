@@ -2,7 +2,7 @@
 Advanced matrix operations examples using arrpy
 """
 
-from arrpy import Array
+from arrpy import Array, array, zeros, ones, eye, concatenate, vstack, hstack
 
 def linear_algebra_examples():
     """Demonstrate linear algebra operations"""
@@ -155,6 +155,73 @@ def system_of_equations_example():
     print("(Note: This example shows representation only - solving requires additional methods)")
     print()
 
+def matrix_construction_examples():
+    """Demonstrate matrix construction with zeros, ones, and eye"""
+    print("=== Matrix Construction Examples ===")
+    
+    # Create common matrix types
+    zero_matrix = zeros((3, 3))
+    ones_matrix = ones((2, 4))
+    identity_matrix = eye(3)
+    
+    print(f"Zero matrix (3x3): {zero_matrix}")
+    print(f"Ones matrix (2x4): {ones_matrix}")
+    print(f"Identity matrix (3x3): {identity_matrix}")
+    
+    # Create diagonal matrix with eye offset
+    diagonal_matrix = eye(4, k=1)  # Superdiagonal
+    print(f"Superdiagonal matrix: {diagonal_matrix}")
+    print()
+
+def matrix_concatenation_examples():
+    """Demonstrate matrix concatenation and stacking"""
+    print("=== Matrix Concatenation Examples ===")
+    
+    # Create sample matrices
+    A = array([[1, 2], [3, 4]])
+    B = array([[5, 6], [7, 8]])
+    C = array([[9, 10]])
+    
+    print(f"Matrix A: {A}")
+    print(f"Matrix B: {B}")
+    print(f"Matrix C: {C}")
+    
+    # Horizontal stacking (side by side)
+    horizontal = hstack([A, B])
+    print(f"Horizontal stack [A, B]: {horizontal}")
+    
+    # Vertical stacking (on top of each other)
+    vertical = vstack([A, B])
+    print(f"Vertical stack (A on B): {vertical}")
+    
+    # Add row to matrix
+    with_row = vstack([A, C])
+    print(f"A with new row C: {with_row}")
+    print()
+
+def block_matrix_operations():
+    """Demonstrate block matrix construction"""
+    print("=== Block Matrix Operations ===")
+    
+    # Create quadrant matrices
+    top_left = array([[1, 2], [3, 4]])
+    top_right = array([[5, 6], [7, 8]])
+    bottom_left = array([[9, 10], [11, 12]])
+    bottom_right = array([[13, 14], [15, 16]])
+    
+    print(f"Top-left: {top_left}")
+    print(f"Top-right: {top_right}")
+    print(f"Bottom-left: {bottom_left}")
+    print(f"Bottom-right: {bottom_right}")
+    
+    # Construct block matrix
+    top_row = hstack([top_left, top_right])
+    bottom_row = hstack([bottom_left, bottom_right])
+    block_matrix = vstack([top_row, bottom_row])
+    
+    print(f"Block matrix (4x4): {block_matrix}")
+    print()
+
 if __name__ == "__main__":
     linear_algebra_examples()
     matrix_chain_operations()
@@ -163,5 +230,8 @@ if __name__ == "__main__":
     vector_operations()
     transformation_matrices()
     system_of_equations_example()
+    matrix_construction_examples()
+    matrix_concatenation_examples()
+    block_matrix_operations()
     
     print("=== All matrix operation examples completed! ===")
