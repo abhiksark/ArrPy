@@ -48,6 +48,39 @@ Or install testing dependencies separately:
 pip install -r requirements.txt
 ```
 
+### Conda Environment Setup (Recommended)
+
+For optimal performance and full benchmark capabilities, use the conda ml environment:
+
+#### Prerequisites
+- Conda or Miniconda installed
+- Python 3.6+ support
+
+#### Quick Setup
+```bash
+# Create the ml environment with required packages
+conda create -n ml python=3.10 numpy matplotlib pandas scipy -y
+
+# Use the automated setup script
+chmod +x setup_ml_env.sh
+./setup_ml_env.sh
+```
+
+#### Manual Setup
+```bash
+# Activate the ml environment
+conda activate ml
+
+# Verify ArrPy functionality
+python -c "import arrpy as ap; print(f'ArrPy {ap.__version__} ready!')"
+```
+
+#### Environment Benefits
+- **Full matplotlib support** for benchmark visualizations
+- **Optimized NumPy** for performance comparisons
+- **Clean benchmark execution** with proper warning handling
+- **Complete testing suite** with all dependencies
+
 ## Usage
 
 ```python
@@ -190,6 +223,8 @@ Works with both scalars and other Array instances of compatible shapes.
 
 ## Testing
 
+### Basic Test Suite
+
 Run the test suite:
 
 ```bash
@@ -198,22 +233,90 @@ pytest
 
 The test suite validates all functionality against NumPy's behavior to ensure compatibility and correctness.
 
+### Benchmarking
+
+#### Quick Benchmark (Any Environment)
+```bash
+cd benchmarks
+python scalability_test_clean.py
+```
+
+#### Comprehensive Benchmarks (Conda ML Environment)
+
+For full benchmark suite with visualization:
+
+```bash
+# Using the automated benchmark runner
+python run_benchmarks_ml.py
+
+# Or manually in ml environment
+conda activate ml
+cd benchmarks
+python scalability_test.py
+```
+
+#### Benchmark Features
+- **Performance comparison** with NumPy across different array sizes
+- **Scalability analysis** showing O(n) complexity differences  
+- **Clean output** with warning suppression
+- **Visual plots** (when matplotlib available)
+- **HTML reports** for detailed analysis
+
+#### Available Benchmark Scripts
+- `scalability_test.py` - Full comprehensive benchmarks
+- `scalability_test_clean.py` - Fast benchmarks with clean output
+- `performance_comparison.py` - Detailed performance analysis
+- `run_benchmarks_ml.py` - Automated benchmark runner
+
 ## Development
 
 ### Project Structure
 
 ```
 arrpy-project/
-├── arrpy/
-│   ├── __init__.py
-│   └── main.py
-├── tests/
-│   └── test_array.py
-├── .gitignore
-├── LICENSE
-├── README.md
+├── arrpy/                          # Core package
+│   ├── __init__.py                 # Public API
+│   ├── core/                       # Core array functionality
+│   │   ├── __init__.py
+│   │   └── array.py               # Array class implementation
+│   ├── creation/                   # Array creation functions
+│   │   ├── __init__.py
+│   │   ├── basic.py               # zeros, ones, eye, etc.
+│   │   └── ranges.py              # arange, linspace, logspace
+│   ├── math/                       # Mathematical functions
+│   │   ├── __init__.py
+│   │   ├── arithmetic.py          # power, absolute, sign, etc.
+│   │   ├── trigonometric.py       # sin, cos, tan, etc.
+│   │   ├── logarithmic.py         # exp, log, sqrt, etc.
+│   │   └── rounding.py            # floor, ceil, round, trunc
+│   ├── statistics/                 # Statistical functions
+│   │   ├── __init__.py
+│   │   ├── basic.py               # sum, mean, min, max, std, var
+│   │   └── aggregation.py         # prod, cumsum, argmin, argmax
+│   └── manipulation/               # Array manipulation
+│       ├── __init__.py
+│       ├── shape.py               # reshape, transpose, squeeze
+│       └── joining.py             # concatenate, stack, vstack, hstack
+├── benchmarks/                     # Performance benchmarking
+│   ├── scalability_test.py        # Comprehensive benchmarks
+│   ├── scalability_test_clean.py  # Fast clean benchmarks
+│   ├── performance_comparison.py  # Detailed performance analysis
+│   └── visualization.py           # Benchmark visualization tools
+├── tests/                          # Test suite (114 tests)
+│   ├── test_array.py              # Core functionality tests
+│   └── test_new_functions.py      # Extended feature tests
+├── examples/                       # Usage examples
+│   ├── basic_usage.py
+│   ├── matrix_operations.py
+│   └── data_analysis.py
+├── setup_ml_env.sh                # Conda environment setup
+├── run_benchmarks_ml.py           # Automated benchmark runner
+├── NUMPY_GAP_ANALYSIS.md          # Feature gap analysis
+├── BENCHMARK_FIXES.md             # Benchmark warning fixes
 ├── requirements.txt
-└── setup.py
+├── setup.py
+├── pytest.ini
+└── README.md
 ```
 
 ### Contributing
@@ -234,8 +337,48 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Limited to basic array operations compared to NumPy's extensive functionality
 - No support for advanced NumPy features like broadcasting, fancy indexing, or specialized data types
 
+## Troubleshooting
+
+### Conda Environment Issues
+
+**Environment not found:**
+```bash
+# Create the ml environment if it doesn't exist
+conda create -n ml python=3.10 numpy matplotlib pandas scipy -y
+```
+
+**Matplotlib import errors:**
+```bash
+# Install matplotlib in your current environment
+conda install matplotlib
+# or
+pip install matplotlib
+```
+
+**Permission denied on setup script:**
+```bash
+chmod +x setup_ml_env.sh
+```
+
+**ArrPy import fails:**
+```bash
+# From project root directory
+export PYTHONPATH=$PWD:$PYTHONPATH
+python -c "import arrpy; print('ArrPy imported successfully')"
+```
+
+### Performance Notes
+
+- **Small arrays (< 1000 elements)**: ArrPy and NumPy performance is comparable
+- **Medium arrays (1000-10000)**: NumPy is 2-10x faster
+- **Large arrays (> 10000)**: NumPy is 10-100x faster for complex operations
+- **Matrix multiplication**: Shows largest performance gaps (O(n³) complexity)
+- **Simple operations**: Minimal performance differences
+
 ## Requirements
 
 - Python 3.6+
 - No runtime dependencies
 - Testing requires: pytest, numpy (for test validation)
+- Benchmarking requires: numpy, matplotlib (optional)
+- Conda ml environment: python 3.10+, numpy 2.0+, matplotlib 3.10+

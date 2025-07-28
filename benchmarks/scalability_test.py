@@ -4,11 +4,28 @@ Scalability benchmarks to test how arrpy and numpy performance scales with array
 
 import time
 import numpy as np
+import sys
+import os
+import warnings
+
+# Suppress numpy warnings for cleaner output
+warnings.filterwarnings("ignore", category=RuntimeWarning, module="numpy")
+warnings.filterwarnings("ignore", category=FutureWarning, module="numpy")
+
+# Add parent directory to path to import arrpy
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from arrpy import Array, zeros, ones, arange, linspace
-import matplotlib.pyplot as plt
+
 import gc
 import math
 from statistics import mean
+
+# Try to import matplotlib, but make it optional
+try:
+    import matplotlib.pyplot as plt
+    HAS_MATPLOTLIB = True
+except ImportError:
+    HAS_MATPLOTLIB = False
 
 class ScalabilityBenchmark:
     def __init__(self):
@@ -20,7 +37,9 @@ class ScalabilityBenchmark:
         for _ in range(iterations):
             gc.collect()
             start = time.perf_counter()
-            result = func()
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                result = func()
             end = time.perf_counter()
             times.append(end - start)
         return mean(times)
@@ -98,8 +117,6 @@ def test_creation_scaling():
         create_arrpy_2d,
         create_numpy_2d
     )
-    
-    return benchmark
 
 def test_arithmetic_scaling():
     """Test how arithmetic operations scale with size"""
@@ -154,8 +171,6 @@ def test_arithmetic_scaling():
         return arr1 * 3.14159
     
     benchmark.test_scaling("Scalar Multiplication", sizes, scalar_mul_arrpy, scalar_mul_numpy)
-    
-    return benchmark
 
 def test_matrix_operations_scaling():
     """Test how matrix operations scale with size"""
@@ -199,8 +214,6 @@ def test_matrix_operations_scaling():
         return arr1.T
     
     benchmark.test_scaling("Transpose", sizes, transpose_arrpy, transpose_numpy)
-    
-    return benchmark
 
 def test_aggregation_scaling():
     """Test how aggregation operations scale with size"""
@@ -258,8 +271,6 @@ def test_aggregation_scaling():
         return test_arrays_2d[size]['numpy'].sum()
     
     benchmark.test_scaling("2D Sum", sizes_2d, sum_2d_arrpy, sum_2d_numpy)
-    
-    return benchmark
 
 def test_indexing_scaling():
     """Test how indexing operations scale with size"""
@@ -314,8 +325,6 @@ def test_indexing_scaling():
         return rows
     
     benchmark.test_scaling("Row Access (10 ops)", sizes, row_access_arrpy, row_access_numpy)
-    
-    return benchmark
 
 def test_reshape_scaling():
     """Test how reshape operations scale with size"""
@@ -355,8 +364,6 @@ def test_reshape_scaling():
         return arr.reshape(shape)
     
     benchmark.test_scaling("1D to 2D Reshape", sizes, reshape_arrpy, reshape_numpy)
-    
-    return benchmark
 
 def test_new_features_scaling():
     """Test how new features scale with size"""
@@ -466,8 +473,6 @@ def test_new_features_scaling():
         return np.sin(test_arrays_math[size]['numpy_trig'])
     
     benchmark.test_scaling("sin", sizes_math, sin_arrpy, sin_numpy)
-    
-    return benchmark
 
 def analyze_complexity(benchmark_results):
     """Analyze the computational complexity from benchmark results"""
@@ -527,59 +532,59 @@ def analyze_complexity(benchmark_results):
 
 def generate_scalability_plots(all_results):
     """Generate plots showing scalability comparison"""
-    try:
-        import matplotlib.pyplot as plt
-        
+    if not HAS_MATPLOTLIB:
         print("\n" + "=" * 60)
-        print("GENERATING SCALABILITY PLOTS")
+        print("MATPLOTLIB NOT AVAILABLE - SKIPPING PLOT GENERATION")
         print("=" * 60)
-        
-        # Create subplots for different operation categories
-        fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-        fig.suptitle('arrpy vs numpy Scalability Comparison', fontsize=16)
-        
-        plot_configs = [
-            ("1D Array Creation", 0, 0),
-            ("Addition", 0, 1),
-            ("Matrix Multiplication", 0, 2),
-            ("1D Sum", 1, 0),
-            ("Single Element Access (100 ops)", 1, 1),
-            ("1D to 2D Reshape", 1, 2)
-        ]
-        
-        for operation_name, row, col in plot_configs:
-            ax = axes[row, col]
-            
-            # Find the results for this operation
-            results = None
-            for benchmark_name, benchmark_results in all_results.items():
-                if operation_name in benchmark_results.results:
-                    results = benchmark_results.results[operation_name]
-                    break
-            
-            if results:
-                sizes = results['sizes']
-                arrpy_times = results['arrpy_times']
-                numpy_times = results['numpy_times']
-                
-                ax.loglog(sizes, arrpy_times, 'o-', label='arrpy', linewidth=2)
-                ax.loglog(sizes, numpy_times, 's-', label='numpy', linewidth=2)
-                ax.set_xlabel('Array Size')
-                ax.set_ylabel('Time (seconds)')
-                ax.set_title(operation_name)
-                ax.grid(True, alpha=0.3)
-                ax.legend()
-            else:
-                ax.text(0.5, 0.5, 'No data', ha='center', va='center', transform=ax.transAxes)
-                ax.set_title(operation_name)
-        
-        plt.tight_layout()
-        plt.savefig('scalability_comparison.png', dpi=300, bbox_inches='tight')
-        print("Scalability plots saved as 'scalability_comparison.png'")
-        
-    except ImportError:
-        print("matplotlib not available - skipping plot generation")
         print("Install matplotlib to generate scalability plots: pip install matplotlib")
+        return
+        
+    print("\n" + "=" * 60)
+    print("GENERATING SCALABILITY PLOTS")
+    print("=" * 60)
+    
+    # Create subplots for different operation categories
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+    fig.suptitle('arrpy vs numpy Scalability Comparison', fontsize=16)
+    
+    plot_configs = [
+        ("1D Array Creation", 0, 0),
+        ("Addition", 0, 1),
+        ("Matrix Multiplication", 0, 2),
+        ("1D Sum", 1, 0),
+        ("Single Element Access (100 ops)", 1, 1),
+        ("1D to 2D Reshape", 1, 2)
+    ]
+    
+    for operation_name, row, col in plot_configs:
+        ax = axes[row, col]
+        
+        # Find the results for this operation
+        results = None
+        for benchmark_name, benchmark_results in all_results.items():
+            if operation_name in benchmark_results.results:
+                results = benchmark_results.results[operation_name]
+                break
+        
+        if results:
+            sizes = results['sizes']
+            arrpy_times = results['arrpy_times']
+            numpy_times = results['numpy_times']
+            
+            ax.loglog(sizes, arrpy_times, 'o-', label='arrpy', linewidth=2)
+            ax.loglog(sizes, numpy_times, 's-', label='numpy', linewidth=2)
+            ax.set_xlabel('Array Size')
+            ax.set_ylabel('Time (seconds)')
+            ax.set_title(operation_name)
+            ax.grid(True, alpha=0.3)
+            ax.legend()
+        else:
+            ax.text(0.5, 0.5, 'No data', ha='center', va='center', transform=ax.transAxes)
+            ax.set_title(operation_name)
+    
+    plt.tight_layout()
+    plt.savefig('scalability_comparison.png', dpi=300, bbox_inches='tight')
+    print("Scalability plots saved as 'scalability_comparison.png'")
 
 def run_scalability_tests():
     """Run comprehensive scalability tests"""

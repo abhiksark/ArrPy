@@ -1,7 +1,15 @@
 import pytest
 import numpy as np
 import math
-from arrpy import Array, zeros, ones, eye, arange, linspace, concatenate, vstack, hstack
+import arrpy as ap
+from arrpy import (
+    Array, array, zeros, ones, empty, full, eye, identity, 
+    arange, linspace, logspace, concatenate, vstack, hstack,
+    sin, cos, tan, arcsin, arccos, arctan, exp, log, log10, log2, sqrt,
+    power, absolute, sign, floor_divide, mod, floor, ceil, round, trunc,
+    sum, mean, min, max, std, var, median, percentile, prod, cumsum, cumprod, argmin, argmax,
+    reshape, transpose, squeeze, expand_dims, stack
+)
 
 
 class TestArrayInitialization:
@@ -189,10 +197,12 @@ class TestArrayTranspose:
         assert transposed[0, 1] == 4
         assert transposed[2, 1] == 6
     
-    def test_transpose_non_2d_error(self):
+    def test_transpose_1d_behavior(self):
+        # 1D transpose should return a copy of itself
         arr = Array([1, 2, 3])
-        with pytest.raises(ValueError, match="Transpose is only supported for 2D arrays"):
-            arr.T
+        transposed = arr.T
+        assert transposed.shape == (3,)
+        assert list(transposed._data) == [1, 2, 3]
 
 
 class TestArrayDot:
@@ -418,12 +428,14 @@ class TestExtendedAggregations:
     
     def test_std_calculation(self):
         arr = Array([1, 2, 3, 4, 5])
-        expected_std = math.sqrt(sum((x - 3) ** 2 for x in [1, 2, 3, 4, 5]) / 5)
+        # Use Python's built-in sum for the expected calculation
+        expected_std = math.sqrt(__builtins__['sum']((x - 3) ** 2 for x in [1, 2, 3, 4, 5]) / 5)
         assert abs(arr.std() - expected_std) < 1e-10
     
     def test_var_calculation(self):
         arr = Array([1, 2, 3, 4, 5])
-        expected_var = sum((x - 3) ** 2 for x in [1, 2, 3, 4, 5]) / 5
+        # Use Python's built-in sum for the expected calculation  
+        expected_var = __builtins__['sum']((x - 3) ** 2 for x in [1, 2, 3, 4, 5]) / 5
         assert abs(arr.var() - expected_var) < 1e-10
     
     def test_median_odd_length(self):
