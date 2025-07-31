@@ -5,7 +5,7 @@ This module provides functions for changing array shapes, adding/removing
 dimensions, and transposing arrays.
 """
 
-from ..core.array import Array
+from ..core import Array
 
 
 def reshape(arr, new_shape):
@@ -41,13 +41,11 @@ def reshape(arr, new_shape):
     for dim in new_shape:
         new_size *= dim
     
-    if new_size != len(arr._data):
-        raise ValueError(f"Cannot reshape array of size {len(arr._data)} into shape {new_shape}")
+    if new_size != arr.size:
+        raise ValueError(f"Cannot reshape array of size {arr.size} into shape {new_shape}")
     
-    new_array = Array([])
-    new_array._data = arr._data.copy()
-    new_array._shape = new_shape
-    return new_array
+    # Use the array's reshape method directly
+    return arr.reshape(new_shape)
 
 
 def transpose(arr):
@@ -88,9 +86,9 @@ def transpose(arr):
             for i in range(rows):
                 transposed_data.append(arr._data[i * cols + j])
         
-        new_array = Array([])
-        new_array._data = transposed_data
-        new_array._shape = (cols, rows)
+        # Create array with data and reshape
+        new_array = Array(transposed_data)
+        new_array = new_array.reshape((cols, rows))
         return new_array
     else:
         raise NotImplementedError("Transpose for >2D arrays not yet implemented")
@@ -143,9 +141,10 @@ def squeeze(arr, axis=None):
     if not new_shape:
         new_shape = (1,)
     
-    new_array = Array([])
-    new_array._data = arr._data.copy()
-    new_array._shape = new_shape
+    # Create array with data and reshape
+    new_array = Array(arr._data.copy())
+    if len(new_shape) > 1 or new_shape != (len(arr._data),):
+        new_array = new_array.reshape(new_shape)
     return new_array
 
 
@@ -192,7 +191,8 @@ def expand_dims(arr, axis):
     
     new_shape = tuple(old_shape)
     
-    new_array = Array([])
-    new_array._data = arr._data.copy()
-    new_array._shape = new_shape
+    # Create array with data and reshape
+    new_array = Array(arr._data.copy())
+    if len(new_shape) > 1 or new_shape != (len(arr._data),):
+        new_array = new_array.reshape(new_shape)
     return new_array

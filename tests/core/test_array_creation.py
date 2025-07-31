@@ -8,6 +8,14 @@ import pytest
 import arrpy as ap
 from arrpy import Array
 
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
+
 
 class TestArrayInitialization:
     """Test Array class initialization."""

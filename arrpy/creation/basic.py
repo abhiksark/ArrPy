@@ -5,7 +5,7 @@ This module provides functions for creating arrays filled with specific values
 or patterns, such as zeros, ones, empty arrays, and identity matrices.
 """
 
-from ..core.array import Array
+from ..core import Array
 
 
 def zeros(shape):
@@ -46,9 +46,11 @@ def zeros(shape):
         total_size *= dim
     
     data = [0] * total_size
-    arr = Array([])
-    arr._data = data
-    arr._shape = shape
+    
+    # Create array with data and reshape if needed
+    arr = Array(data)
+    if len(shape) > 1:
+        arr = arr.reshape(shape)
     return arr
 
 
@@ -90,9 +92,11 @@ def ones(shape):
         total_size *= dim
     
     data = [1] * total_size
-    arr = Array([])
-    arr._data = data
-    arr._shape = shape
+    
+    # Create array with data and reshape if needed
+    arr = Array(data)
+    if len(shape) > 1:
+        arr = arr.reshape(shape)
     return arr
 
 
@@ -170,9 +174,11 @@ def full(*args):
         total_size *= dim
     
     data = [fill_value] * total_size
-    arr = Array([])
-    arr._data = data
-    arr._shape = shape
+    
+    # Create array with data and reshape if needed
+    arr = Array(data)
+    if len(shape) > 1:
+        arr = arr.reshape(shape)
     return arr
 
 
@@ -217,9 +223,15 @@ def eye(n, m=None, k=0):
             else:
                 data.append(0)
     
-    arr = Array([])
-    arr._data = data
-    arr._shape = (n, m)
+    # Create array with data and reshape
+    if n == 0 or m == 0:
+        # Special case for empty matrices
+        arr = Array(data)
+        arr = arr.reshape((n, m))
+        return arr
+    
+    arr = Array(data)
+    arr = arr.reshape((n, m))
     return arr
 
 

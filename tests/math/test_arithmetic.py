@@ -9,6 +9,14 @@ import math
 from arrpy import Array
 import arrpy as ap
 
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
+
 
 class TestArrayAddition:
     """Test addition operations."""
@@ -17,7 +25,7 @@ class TestArrayAddition:
         """Test adding scalar to array."""
         arr = Array([1, 2, 3, 4])
         result = arr + 5
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == arr.shape
         assert list(result._data) == [6, 7, 8, 9]
     
@@ -26,7 +34,7 @@ class TestArrayAddition:
         arr1 = Array([1, 2, 3])
         arr2 = Array([4, 5, 6])
         result = arr1 + arr2
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == (3,)
         assert list(result._data) == [5, 7, 9]
     

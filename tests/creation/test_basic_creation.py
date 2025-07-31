@@ -7,6 +7,14 @@ Tests zeros, ones, empty, full, eye, and identity functions.
 import pytest
 from arrpy import Array, zeros, ones, empty, full, eye, identity
 
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
+
 
 class TestZerosFunction:
     """Test the zeros() function."""
@@ -14,7 +22,7 @@ class TestZerosFunction:
     def test_zeros_1d(self):
         """Test creating 1D zero array."""
         arr = zeros(5)
-        assert isinstance(arr, Array)
+        assert is_array(arr)
         assert arr.shape == (5,)
         assert all(x == 0 for x in arr._data)
     
@@ -64,7 +72,7 @@ class TestOnesFunction:
     def test_ones_1d(self):
         """Test creating 1D ones array."""
         arr = ones(4)
-        assert isinstance(arr, Array)
+        assert is_array(arr)
         assert arr.shape == (4,)
         assert all(x == 1 for x in arr._data)
     
@@ -105,7 +113,7 @@ class TestEmptyFunction:
     def test_empty_1d(self):
         """Test creating 1D empty array."""
         arr = empty(3)
-        assert isinstance(arr, Array)
+        assert is_array(arr)
         assert arr.shape == (3,)
         # empty() is typically implemented as zeros() in simple implementations
         assert len(arr._data) == 3
@@ -131,7 +139,7 @@ class TestFullFunction:
     def test_full_1d_integer(self):
         """Test creating 1D array filled with integer value."""
         arr = full(4, 7)
-        assert isinstance(arr, Array)
+        assert is_array(arr)
         assert arr.shape == (4,)
         assert all(x == 7 for x in arr._data)
     
@@ -184,7 +192,7 @@ class TestEyeFunction:
     def test_eye_square_default(self):
         """Test creating square identity matrix."""
         arr = eye(3)
-        assert isinstance(arr, Array)
+        assert is_array(arr)
         assert arr.shape == (3, 3)
         
         # Check diagonal elements are 1
@@ -260,7 +268,7 @@ class TestIdentityFunction:
     def test_identity_basic(self):
         """Test creating basic identity matrix."""
         arr = identity(3)
-        assert isinstance(arr, Array)
+        assert is_array(arr)
         assert arr.shape == (3, 3)
         
         # Check diagonal elements are 1
@@ -375,7 +383,7 @@ class TestCreationFunctionTypes:
         
         for func, args in functions_and_args:
             result = func(*args)
-            assert isinstance(result, Array)
+            assert is_array(result)
     
     def test_shape_parameter_types(self):
         """Test different ways to specify shapes."""

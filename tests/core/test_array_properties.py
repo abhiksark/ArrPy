@@ -7,6 +7,14 @@ Tests array shape, dimensions, size, and other properties.
 import pytest
 from arrpy import Array
 
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
+
 
 class TestShapeProperty:
     """Test the shape property."""

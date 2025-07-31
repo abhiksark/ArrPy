@@ -8,6 +8,14 @@ import pytest
 from arrpy import Array, zeros, ones, empty
 import arrpy as ap
 
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
+
 
 class TestEmptyArrayCreation:
     """Test creating empty arrays."""
@@ -107,7 +115,7 @@ class TestEmptyArrayArithmetic:
         arr = Array([])
         result = arr + 5
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == (0,)
         assert result.size == 0
         assert len(result._data) == 0
@@ -154,7 +162,7 @@ class TestEmptyArrayComparisons:
         arr = Array([])
         result = arr > 5
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == (0,)
         assert result.size == 0
     
@@ -228,7 +236,7 @@ class TestEmptyArrayMathematicalFunctions:
         arr = Array([])
         result = ap.sin(arr)
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == (0,)
         assert result.size == 0
     

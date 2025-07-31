@@ -7,6 +7,14 @@ Tests equality, inequality, and relational operators.
 import pytest
 from arrpy import Array
 
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
+
 
 class TestEqualityComparison:
     """Test equality (==) and inequality (!=) operators."""
@@ -17,7 +25,7 @@ class TestEqualityComparison:
         arr2 = Array([1, 0, 3, 5])
         result = arr1 == arr2
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == arr1.shape
         assert list(result._data) == [True, False, True, False]
     
@@ -307,7 +315,7 @@ class TestComparisonReturnTypes:
         arr = Array([1, 2, 3, 4])
         result = arr > 2
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         for val in result._data:
             assert isinstance(val, bool)
     
@@ -327,5 +335,5 @@ class TestComparisonReturnTypes:
         
         for op in operators:
             result = op(arr1, arr2)
-            assert isinstance(result, Array)
+            assert is_array(result)
             assert result.shape == arr1.shape

@@ -6,6 +6,11 @@ Tests getting and setting array elements using various indexing patterns.
 
 import pytest
 from arrpy import Array
+# Import helper for type checking that works with hybrid arrays
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from test_imports import is_array
 
 
 class TestArrayIndexing1D:
@@ -61,7 +66,7 @@ class TestArrayIndexing2D:
         arr = Array([[1, 2, 3], [4, 5, 6]])
         
         sub = arr[0]
-        assert isinstance(sub, Array)
+        assert is_array(sub)
         assert sub.shape == (3,)
         assert sub[0] == 1
         assert sub[1] == 2

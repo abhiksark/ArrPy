@@ -10,6 +10,14 @@ import math
 from arrpy import Array, zeros, ones, arange, linspace
 import arrpy as ap
 
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
+
 
 class TestBasicOperationCompatibility:
     """Test that basic operations match NumPy behavior."""

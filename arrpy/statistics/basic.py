@@ -5,7 +5,7 @@ This module provides fundamental statistical functions that operate
 on array data, such as sum, mean, min, max, std, var, etc.
 """
 
-from ..core.array import Array
+from ..core import Array
 
 
 def sum(arr):

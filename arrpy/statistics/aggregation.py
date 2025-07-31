@@ -2,7 +2,7 @@
 Aggregation functions for ArrPy arrays.
 """
 
-from ..core.array import Array
+from ..core import Array
 
 
 def prod(arr):
@@ -26,10 +26,11 @@ def cumsum(arr):
         cumulative += x
         result_data.append(cumulative)
     
-    new_array = Array([])
-    new_array._data = result_data
-    new_array._shape = arr._shape
-    return new_array
+    # Create array with the result data and reshape if needed
+    result = Array(result_data)
+    if arr.ndim > 1:
+        result = result.reshape(arr.shape)
+    return result
 
 
 def cumprod(arr):
@@ -43,10 +44,11 @@ def cumprod(arr):
         cumulative *= x
         result_data.append(cumulative)
     
-    new_array = Array([])
-    new_array._data = result_data
-    new_array._shape = arr._shape
-    return new_array
+    # Create array with the result data and reshape if needed
+    result = Array(result_data)
+    if arr.ndim > 1:
+        result = result.reshape(arr.shape)
+    return result
 
 
 def argmin(arr):

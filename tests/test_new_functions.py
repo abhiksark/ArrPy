@@ -59,7 +59,7 @@ class TestNewArrayCreation:
     def test_array_function(self):
         """Test the array() convenience function."""
         arr = array([1, 2, 3])
-        assert isinstance(arr, Array)
+        assert is_array(arr)
         assert arr.shape == (3,)
         assert list(arr._data) == [1, 2, 3]
 

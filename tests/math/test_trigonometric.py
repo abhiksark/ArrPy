@@ -9,6 +9,14 @@ import math
 from arrpy import Array
 import arrpy as ap
 
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
+
 
 class TestBasicTrigonometric:
     """Test basic trigonometric functions."""
@@ -18,7 +26,7 @@ class TestBasicTrigonometric:
         arr = Array([0, math.pi/6, math.pi/4, math.pi/3, math.pi/2])
         result = ap.sin(arr)
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == arr.shape
         
         # Test known values
@@ -33,7 +41,7 @@ class TestBasicTrigonometric:
         arr = Array([0, math.pi/6, math.pi/4, math.pi/3, math.pi/2])
         result = ap.cos(arr)
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == arr.shape
         
         # Test known values
@@ -48,7 +56,7 @@ class TestBasicTrigonometric:
         arr = Array([0, math.pi/6, math.pi/4, math.pi/3])
         result = ap.tan(arr)
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == arr.shape
         
         # Test known values
@@ -84,7 +92,7 @@ class TestInverseTrigonometric:
         arr = Array([0, 0.5, math.sqrt(2)/2, math.sqrt(3)/2, 1])
         result = ap.arcsin(arr)
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == arr.shape
         
         # Test known values
@@ -99,7 +107,7 @@ class TestInverseTrigonometric:
         arr = Array([1, math.sqrt(3)/2, math.sqrt(2)/2, 0.5, 0])
         result = ap.arccos(arr)
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == arr.shape
         
         # Test known values
@@ -114,7 +122,7 @@ class TestInverseTrigonometric:
         arr = Array([0, 1/math.sqrt(3), 1, math.sqrt(3)])
         result = ap.arctan(arr)
         
-        assert isinstance(result, Array)
+        assert is_array(result)
         assert result.shape == arr.shape
         
         # Test known values

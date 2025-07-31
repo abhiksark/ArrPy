@@ -6,7 +6,7 @@ such as arange, linspace, and logspace.
 """
 
 import math
-from ..core.array import Array
+from ..core import Array
 
 
 def arange(start, stop=None, step=1):

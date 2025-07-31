@@ -1,0 +1,140 @@
+{
+  "timestamp": "2025-07-31 10:31:35",
+  "results": [
+    {
+      "operation": "Array Creation (1000)",
+      "numpy_time": 2.9890380001234008e-05,
+      "c_arrpy_time": 1.2140060034653288e-05,
+      "py_arrpy_time": 7.578445995932271e-05,
+      "c_vs_py_speedup": 6.2425111361063435,
+      "numpy_vs_c_speedup": 0.40615274995339945,
+      "numpy_vs_py_speedup": 2.5354130645443114,
+      "c_efficiency": 246.21278573510494
+    },
+    {
+      "operation": "Scalar Addition (1000)",
+      "numpy_time": 1.344500014965888e-06,
+      "c_arrpy_time": 9.670999770605703e-07,
+      "py_arrpy_time": 3.763971999433124e-05,
+      "c_vs_py_speedup": 38.92019531293385,
+      "numpy_vs_c_speedup": 0.7193008302681998,
+      "numpy_vs_py_speedup": 27.995328802793814,
+      "c_efficiency": 139.0238906893988
+    },
+    {
+      "operation": "Sum Operation (1000)",
+      "numpy_time": 1.482690008742793e-06,
+      "c_arrpy_time": 2.8943000870640387e-07,
+      "py_arrpy_time": 5.050049994679285e-06,
+      "c_vs_py_speedup": 17.448259830590082,
+      "numpy_vs_c_speedup": 0.19520601541775967,
+      "numpy_vs_py_speedup": 3.4060052775032443,
+      "c_efficiency": 512.2792952153159
+    },
+    {
+      "operation": "Element Access (100 elements from 1000)",
+      "numpy_time": 5.961900001238973e-06,
+      "c_arrpy_time": 8.221590019275026e-06,
+      "py_arrpy_time": 1.9788669978879623e-05,
+      "c_vs_py_speedup": 2.406915199187295,
+      "numpy_vs_c_speedup": 1.3790217913025133,
+      "numpy_vs_py_speedup": 3.319188509496509,
+      "c_efficiency": 72.51517026830157
+    },
+    {
+      "operation": "Array Creation (10000)",
+      "numpy_time": 0.00023513468006058246,
+      "c_arrpy_time": 0.00010074196000459779,
+      "py_arrpy_time": 0.0004796924600486818,
+      "c_vs_py_speedup": 4.761595466544318,
+      "numpy_vs_c_speedup": 0.42844364760928344,
+      "numpy_vs_py_speedup": 2.0400753301260752,
+      "c_efficiency": 233.40292371704012
+    },
+    {
+      "operation": "Scalar Addition (10000)",
+      "numpy_time": 1.8494199775886955e-06,
+      "c_arrpy_time": 2.278220053995028e-06,
+      "py_arrpy_time": 0.0002523899799962237,
+      "c_vs_py_speedup": 110.78384616694034,
+      "numpy_vs_c_speedup": 1.231856518044868,
+      "numpy_vs_py_speedup": 136.46980299482541,
+      "c_efficiency": 81.17828540511705
+    },
+    {
+      "operation": "Sum Operation (10000)",
+      "numpy_time": 2.1347600159060675e-06,
+      "c_arrpy_time": 9.95489986053144e-07,
+      "py_arrpy_time": 3.882461998728104e-05,
+      "c_vs_py_speedup": 39.000512844142655,
+      "numpy_vs_c_speedup": 0.4663240732615197,
+      "numpy_vs_py_speedup": 18.186878008768822,
+      "c_efficiency": 214.44314315705267
+    },
+    {
+      "operation": "Element Access (100 elements from 10000)",
+      "numpy_time": 4.367740002635401e-06,
+      "c_arrpy_time": 5.746539995925559e-06,
+      "py_arrpy_time": 1.4755630008949083e-05,
+      "c_vs_py_speedup": 2.567741635734058,
+      "numpy_vs_c_speedup": 1.3156781292975819,
+      "numpy_vs_py_speedup": 3.3783215118220986,
+      "c_efficiency": 76.00643179604141
+    },
+    {
+      "operation": "Array Creation (100000)",
+      "numpy_time": 0.002109647560018857,
+      "c_arrpy_time": 0.0010107484200307226,
+      "py_arrpy_time": 0.0045266733600328735,
+      "c_vs_py_speedup": 4.4785361721320145,
+      "numpy_vs_c_speedup": 0.47910771409689307,
+      "numpy_vs_py_speedup": 2.145701227930419,
+      "c_efficiency": 208.7213314619609
+    },
+    {
+      "operation": "Scalar Addition (100000)",
+      "numpy_time": 1.4439039969147416e-05,
+      "c_arrpy_time": 1.9294519988761747e-05,
+      "py_arrpy_time": 0.0032965179200255077,
+      "c_vs_py_speedup": 170.85254890744065,
+      "numpy_vs_c_speedup": 1.3362744358343261,
+      "numpy_vs_py_speedup": 228.30589340214686,
+      "c_efficiency": 74.834927106544
+    },
+    {
+      "operation": "Sum Operation (100000)",
+      "numpy_time": 1.2111130040466378e-05,
+      "c_arrpy_time": 7.0822799762026985e-06,
+      "py_arrpy_time": 0.0003430505799860839,
+      "c_vs_py_speedup": 48.43787327509991,
+      "numpy_vs_c_speedup": 0.584774496891619,
+      "numpy_vs_py_speedup": 28.325232974946545,
+      "c_efficiency": 171.0060895807736
+    },
+    {
+      "operation": "Element Access (100 elements from 100000)",
+      "numpy_time": 3.7907699970674e-06,
+      "c_arrpy_time": 5.088269999760087e-06,
+      "py_arrpy_time": 1.1983229978795861e-05,
+      "c_vs_py_speedup": 2.3550695972031503,
+      "numpy_vs_c_speedup": 1.34227874645427,
+      "numpy_vs_py_speedup": 3.161159866746407,
+      "c_efficiency": 74.50017387532768
+    },
+    {
+      "operation": "2D Array Creation (100x100)",
+      "numpy_time": 0.00020238594997863403,
+      "c_arrpy_time": 0.0004073906499343138,
+      "py_arrpy_time": 0.0003962042999091864,
+      "c_vs_py_speedup": 0.9725414659690126,
+      "numpy_vs_c_speedup": 2.012939386243572,
+      "numpy_vs_py_speedup": 1.957667021604088,
+      "c_efficiency": 49.67859473732792
+    }
+  ],
+  "summary": {
+    "avg_c_vs_py_speedup": 34.556011308463354,
+    "avg_numpy_vs_c_speedup": 0.9151814257442926,
+    "avg_c_efficiency_pct": 165.67715713425434
+  }
+}

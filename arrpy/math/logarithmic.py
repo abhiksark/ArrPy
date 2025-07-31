@@ -3,7 +3,7 @@ Logarithmic and exponential functions for ArrPy arrays.
 """
 
 import math
-from ..core.array import Array
+from ..core import Array
 
 
 def _apply_elementwise(arr, func):
@@ -11,11 +11,15 @@ def _apply_elementwise(arr, func):
     if not isinstance(arr, Array):
         raise TypeError("Input must be an Array")
     
+    # Flatten the array, apply function, then reshape
     result_data = [func(x) for x in arr._data]
-    new_array = Array([])
-    new_array._data = result_data
-    new_array._shape = arr._shape
-    return new_array
+    
+    # Create array with the result data and reshape if needed
+    result = Array(result_data)
+    if arr.ndim > 1:
+        result = result.reshape(arr.shape)
+    
+    return result
 
 
 def exp(arr):

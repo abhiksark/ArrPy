@@ -414,6 +414,14 @@ class TestMemoryEfficiency:
     def test_empty_array_memory_efficiency(self):
         """Test that empty arrays don't waste memory."""
         import sys
+
+# Import helper for type checking that works with hybrid arrays
+try:
+    from test_imports import is_array
+except ImportError:
+    def is_array(obj):
+        return isinstance(obj, Array)
+
         
         empty_arr = Array([])
         memory_usage = sys.getsizeof(empty_arr._data)
