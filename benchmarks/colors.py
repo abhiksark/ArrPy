@@ -1,39 +1,42 @@
 """
-Color utilities for enhanced benchmark output
+Color utilities for beautiful terminal output in ArrPy benchmarks.
+Provides ANSI color codes, formatting utilities, and the iconic ArrPy banner.
 """
 
-import sys
 import os
+import sys
 
 class Colors:
     """ANSI color codes for terminal output"""
     # Basic colors
-    RED = '\033[91m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    MAGENTA = '\033[95m'
-    CYAN = '\033[96m'
-    WHITE = '\033[97m'
-    
-    # Additional whites
-    BRIGHT_WHITE = '\033[97m'
+    BLACK = '\033[30m'
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    MAGENTA = '\033[35m'
+    CYAN = '\033[36m'
+    WHITE = '\033[37m'
     
     # Bright colors
+    BRIGHT_BLACK = '\033[90m'
     BRIGHT_RED = '\033[91m'
     BRIGHT_GREEN = '\033[92m'
     BRIGHT_YELLOW = '\033[93m'
     BRIGHT_BLUE = '\033[94m'
     BRIGHT_MAGENTA = '\033[95m'
     BRIGHT_CYAN = '\033[96m'
+    BRIGHT_WHITE = '\033[97m'
     
     # Background colors
-    BG_RED = '\033[101m'
-    BG_GREEN = '\033[102m'
-    BG_YELLOW = '\033[103m'
-    BG_BLUE = '\033[104m'
-    BG_MAGENTA = '\033[105m'
-    BG_CYAN = '\033[106m'
+    BG_BLACK = '\033[40m'
+    BG_RED = '\033[41m'
+    BG_GREEN = '\033[42m'
+    BG_YELLOW = '\033[43m'
+    BG_BLUE = '\033[44m'
+    BG_MAGENTA = '\033[45m'
+    BG_CYAN = '\033[46m'
+    BG_WHITE = '\033[47m'
     
     # Styles
     BOLD = '\033[1m'
@@ -49,34 +52,31 @@ class Colors:
     END = '\033[0m'
 
 def supports_color():
-    """Check if the terminal supports color output"""
-    return (
-        hasattr(sys.stdout, "isatty") and sys.stdout.isatty() and
-        os.environ.get("TERM") != "dumb" and
-        os.environ.get("NO_COLOR") is None
-    )
+    """Check if terminal supports color output"""
+    # Check if we're in a terminal that supports colors
+    if hasattr(sys.stdout, 'isatty') and sys.stdout.isatty():
+        # Check environment variables
+        term = os.environ.get('TERM', '')
+        colorterm = os.environ.get('COLORTERM', '')
+        
+        # Most modern terminals support colors
+        if 'color' in term.lower() or colorterm or term in ['xterm', 'xterm-256color', 'screen']:
+            return True
+        
+        # Windows Command Prompt and PowerShell
+        if os.name == 'nt':
+            return True
+    
+    return False
 
-def colorize(text, color=None, bg_color=None, style=None):
-    """Apply colors and styles to text"""
+def colorize(text, color=Colors.WHITE, bg_color="", style=""):
+    """Apply color and style to text if terminal supports it"""
     if not supports_color():
         return text
     
-    codes = []
-    if color:
-        codes.append(color)
-    if bg_color:
-        codes.append(bg_color)
-    if style:
-        if isinstance(style, list):
-            codes.extend(style)
-        else:
-            codes.append(style)
-    
-    if codes:
-        return f"{''.join(codes)}{text}{Colors.RESET}"
-    return text
+    return f"{style}{bg_color}{color}{text}{Colors.RESET}"
 
-def header(text, char="=", color=Colors.BRIGHT_CYAN):
+def header(text, char="=", color=Colors.BRIGHT_BLUE):
     """Create a colored header"""
     width = max(len(text) + 4, 80)
     border = char * width
@@ -106,114 +106,46 @@ def error(text):
 
 def info(text):
     """Style text as info message"""
-    return colorize(f"ℹ {text}", Colors.BRIGHT_BLUE)
+    return colorize(f"ℹ {text}", Colors.BRIGHT_CYAN)
 
-def highlight(text, color=Colors.BRIGHT_YELLOW):
-    """Highlight important text"""
-    return colorize(text, color, style=Colors.BOLD)
+def highlight(text, color=Colors.BRIGHT_WHITE):
+    """Highlight text with background"""
+    return colorize(f" {text} ", color, bg_color=Colors.BG_BLUE, style=Colors.BOLD)
 
 def dim(text):
-    """Dim less important text"""
-    return colorize(text, style=Colors.DIM)
+    """Make text dimmer"""
+    return colorize(text, Colors.BRIGHT_BLACK, style=Colors.DIM)
 
-def format_speedup(speedup, threshold_good=2.0, threshold_bad=0.5):
-    """Format speedup ratio with appropriate colors"""
-    if speedup >= threshold_good:
-        return colorize(f"{speedup:.2f}x", Colors.BRIGHT_GREEN, style=Colors.BOLD)
-    elif speedup <= threshold_bad:
-        return colorize(f"{speedup:.2f}x", Colors.BRIGHT_RED, style=Colors.BOLD)
-    else:
-        return colorize(f"{speedup:.2f}x", Colors.BRIGHT_YELLOW)
+def bold(text, color=Colors.WHITE):
+    """Make text bold"""
+    return colorize(text, color, style=Colors.BOLD)
 
-def format_time(time_seconds):
-    """Format time with appropriate units and colors"""
-    if time_seconds < 1e-6:
-        return colorize(f"{time_seconds*1e9:.2f}ns", Colors.BRIGHT_GREEN)
-    elif time_seconds < 1e-3:
-        return colorize(f"{time_seconds*1e6:.2f}µs", Colors.GREEN)
-    elif time_seconds < 1:
-        return colorize(f"{time_seconds*1e3:.2f}ms", Colors.YELLOW)
-    else:
-        return colorize(f"{time_seconds:.2f}s", Colors.RED)
+def underline(text, color=Colors.WHITE):
+    """Underline text"""
+    return colorize(text, color, style=Colors.UNDERLINE)
 
-def progress_bar(current, total, width=50, fill_char="█", empty_char="░"):
+def progress_bar(percentage, width=50, color=Colors.BRIGHT_GREEN):
     """Create a colored progress bar"""
-    if total == 0:
-        percentage = 100
-    else:
-        percentage = (current / total) * 100
-    
-    filled_width = int(width * current / total) if total > 0 else width
-    empty_width = width - filled_width
-    
-    # Color based on progress
-    if percentage < 30:
-        color = Colors.RED
-    elif percentage < 70:
-        color = Colors.YELLOW
-    else:
-        color = Colors.GREEN
-    
-    bar = colorize(fill_char * filled_width, color) + colorize(empty_char * empty_width, Colors.DIM)
-    return f"[{bar}] {percentage:5.1f}%"
+    filled = int(width * percentage / 100)
+    empty = width - filled
+    bar = "█" * filled + "░" * empty
+    return f"[{colorize(bar, color)}] {percentage:.1f}%"
 
-def table_row(columns, widths, colors=None, separators="|"):
-    """Format a table row with colors"""
+def table_row(*columns, widths=None, colors=None):
+    """Create a formatted table row with colors"""
+    if widths is None:
+        widths = [20] * len(columns)
     if colors is None:
-        colors = [None] * len(columns)
+        colors = [Colors.WHITE] * len(columns)
     
-    formatted_cols = []
-    for i, (col, width) in enumerate(zip(columns, widths)):
-        col_str = str(col)
-        if len(col_str) > width:
-            col_str = col_str[:width-3] + "..."
-        
-        color = colors[i] if i < len(colors) else None
-        formatted_col = colorize(f"{col_str:<{width}}", color)
-        formatted_cols.append(formatted_col)
+    formatted_columns = []
+    for i, (col, width, color) in enumerate(zip(columns, widths, colors)):
+        formatted_columns.append(colorize(f"{str(col):<{width}}", color))
     
-    return f" {separators} ".join(formatted_cols)
+    return " │ ".join(formatted_columns)
 
-def benchmark_result_line(test_name, arrpy_time, numpy_time, speedup):
-    """Format a benchmark result line with colors"""
-    name_color = Colors.BRIGHT_CYAN
-    arrpy_color = Colors.BLUE
-    numpy_color = Colors.MAGENTA
-    
-    formatted_name = colorize(f"{test_name:<40}", name_color)
-    formatted_arrpy = format_time(arrpy_time)
-    formatted_numpy = format_time(numpy_time)
-    formatted_speedup = format_speedup(speedup)
-    
-    # Add visual indicator for performance
-    if speedup > 2.0:
-        indicator = colorize("🟢", Colors.GREEN)
-    elif speedup > 1.0:
-        indicator = colorize("🟡", Colors.YELLOW) 
-    else:
-        indicator = colorize("🔴", Colors.RED)
-    
-    return f"{formatted_name} │ arrpy: {formatted_arrpy:>12} │ numpy: {formatted_numpy:>12} │ speedup: {formatted_speedup:>10} {indicator}"
-
-def category_summary(category_name, avg_speedup, test_count):
-    """Format category summary with colors"""
-    category_color = Colors.BRIGHT_MAGENTA
-    
-    # Performance rating
-    if avg_speedup >= 2.0:
-        rating = colorize("EXCELLENT", Colors.BRIGHT_GREEN, style=Colors.BOLD)
-        emoji = "🚀"
-    elif avg_speedup >= 1.0:
-        rating = colorize("GOOD", Colors.BRIGHT_YELLOW, style=Colors.BOLD)
-        emoji = "⚡"
-    else:
-        rating = colorize("NEEDS WORK", Colors.BRIGHT_RED, style=Colors.BOLD)
-        emoji = "🐌"
-    
-    return f"{emoji} {colorize(category_name, category_color, style=Colors.BOLD)}: Avg {format_speedup(avg_speedup)} across {test_count} tests - {rating}"
-
-def ascii_logo():
-    """Create ASCII art logo for ArrPy"""
+def logo_banner():
+    """Create the iconic ArrPy logo banner"""
     logo = f"""
 {colorize("    ╔═══════════════════════════════════════╗", Colors.BRIGHT_CYAN)}
 {colorize("    ║", Colors.BRIGHT_CYAN)}  {colorize("█████╗ ██████╗ ██████╗ ██████╗ ██╗   ██╗", Colors.BRIGHT_YELLOW, style=Colors.BOLD)}  {colorize("║", Colors.BRIGHT_CYAN)}
@@ -223,8 +155,123 @@ def ascii_logo():
 {colorize("    ║", Colors.BRIGHT_CYAN)}  {colorize("██║  ██║██║  ██║██║  ██║██║        ██║", Colors.BRIGHT_YELLOW, style=Colors.BOLD)}     {colorize("║", Colors.BRIGHT_CYAN)}
 {colorize("    ║", Colors.BRIGHT_CYAN)}  {colorize("╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝", Colors.BRIGHT_YELLOW, style=Colors.BOLD)}     {colorize("║", Colors.BRIGHT_CYAN)}
 {colorize("    ║", Colors.BRIGHT_CYAN)}                                           {colorize("║", Colors.BRIGHT_CYAN)}
-{colorize("    ║", Colors.BRIGHT_CYAN)}         {colorize("Pure Python NumPy Alternative", Colors.BRIGHT_WHITE, style=Colors.BOLD)}         {colorize("║", Colors.BRIGHT_CYAN)}
-{colorize("    ║", Colors.BRIGHT_CYAN)}              {colorize("Performance Benchmarks", Colors.BRIGHT_GREEN)}              {colorize("║", Colors.BRIGHT_CYAN)}
+{colorize("    ║", Colors.BRIGHT_CYAN)}         {colorize("Cython-Optimized NumPy Alternative", Colors.BRIGHT_WHITE, style=Colors.BOLD)}         {colorize("║", Colors.BRIGHT_CYAN)}
+{colorize("    ║", Colors.BRIGHT_CYAN)}              {colorize("Version 0.2.1 - Multicore Performance Benchmarks", Colors.BRIGHT_GREEN)}              {colorize("║", Colors.BRIGHT_CYAN)}
 {colorize("    ╚═══════════════════════════════════════╝", Colors.BRIGHT_CYAN)}
 """
     return logo
+
+def performance_indicator(speedup, operation_name="", width=30):
+    """Create a visual performance indicator"""
+    if speedup >= 5:
+        color = Colors.BRIGHT_RED
+        emoji = "🔴"
+        status = "Much slower"
+    elif speedup >= 2:
+        color = Colors.BRIGHT_YELLOW
+        emoji = "🟡"
+        status = "Slower"
+    elif speedup >= 0.8:
+        color = Colors.BRIGHT_GREEN
+        emoji = "🟢"
+        status = "Competitive"
+    else:
+        color = Colors.BRIGHT_CYAN
+        emoji = "🚀"
+        status = "Faster"
+    
+    # Create visual bar
+    bar_length = min(int(speedup * 5), width)
+    bar = "█" * bar_length
+    
+    return f"{colorize(f'{operation_name:<25}', Colors.WHITE)} │{colorize(bar, color):<{width}} {speedup:.2f}x {emoji}"
+
+def benchmark_summary_table(results):
+    """Create a beautiful summary table of benchmark results"""
+    if not results:
+        return "No results to display"
+    
+    output = []
+    output.append(colorize("\n" + "="*80, Colors.BRIGHT_BLUE, style=Colors.BOLD))
+    output.append(colorize("                     📊 PERFORMANCE SUMMARY", Colors.BRIGHT_WHITE, style=Colors.BOLD))
+    output.append(colorize("="*80, Colors.BRIGHT_BLUE, style=Colors.BOLD))
+    
+    for category, tests in results.items():
+        output.append(f"\n{colorize(f'{category}:', Colors.BRIGHT_MAGENTA, style=Colors.BOLD)}")
+        
+        for test_name, speedup in tests.items():
+            indicator = performance_indicator(speedup, test_name)
+            output.append(f"  {indicator}")
+    
+    return "\n".join(output)
+
+def format_time(seconds):
+    """Format time in appropriate units with color"""
+    if seconds < 1e-6:
+        return colorize(f"{seconds*1e9:.1f}ns", Colors.BRIGHT_GREEN)
+    elif seconds < 1e-3:
+        return colorize(f"{seconds*1e6:.1f}μs", Colors.BRIGHT_CYAN)
+    elif seconds < 1:
+        return colorize(f"{seconds*1e3:.1f}ms", Colors.BRIGHT_YELLOW)
+    else:
+        return colorize(f"{seconds:.2f}s", Colors.BRIGHT_RED)
+
+def format_speedup(speedup):
+    """Format speedup with appropriate color"""
+    if speedup > 1:
+        return colorize(f"{speedup:.2f}x faster", Colors.BRIGHT_GREEN, style=Colors.BOLD)
+    elif speedup < 1:
+        return colorize(f"{1/speedup:.2f}x slower", Colors.BRIGHT_RED, style=Colors.BOLD)
+    else:
+        return colorize("Same speed", Colors.BRIGHT_BLUE)
+
+def separator(char="─", width=80, color=Colors.BRIGHT_BLACK):
+    """Create a separator line"""
+    return colorize(char * width, color)
+
+def benchmark_result_line(name, arrpy_time, numpy_time, speedup_ratio):
+    """Format a benchmark result line with colors"""
+    # Format times
+    arrpy_str = format_time(arrpy_time)
+    numpy_str = format_time(numpy_time)
+    
+    # Determine speedup color and emoji
+    if speedup_ratio > 1:
+        speedup_str = colorize(f"{speedup_ratio:.2f}x slower", Colors.BRIGHT_RED)
+        emoji = "🔴"
+    elif speedup_ratio < 0.8:
+        speedup_str = colorize(f"{1/speedup_ratio:.2f}x faster", Colors.BRIGHT_GREEN)
+        emoji = "🚀"
+    else:
+        speedup_str = colorize(f"{1/speedup_ratio:.2f}x", Colors.BRIGHT_YELLOW)
+        emoji = "🟡"
+    
+    return f"  {colorize(name, Colors.BRIGHT_WHITE):<40} │ arrpy: {arrpy_str} │ numpy: {numpy_str} │ {speedup_str} {emoji}"
+
+# Quick color functions for common use
+def red(text): return colorize(text, Colors.BRIGHT_RED)
+def green(text): return colorize(text, Colors.BRIGHT_GREEN)
+def yellow(text): return colorize(text, Colors.BRIGHT_YELLOW)
+def blue(text): return colorize(text, Colors.BRIGHT_BLUE)
+def magenta(text): return colorize(text, Colors.BRIGHT_MAGENTA)
+def cyan(text): return colorize(text, Colors.BRIGHT_CYAN)
+def white(text): return colorize(text, Colors.BRIGHT_WHITE)
+
+# Test function to verify colors work
+def test_colors():
+    """Test all color functions"""
+    print(logo_banner())
+    print(header("Color Test", color=Colors.BRIGHT_MAGENTA))
+    print(success("Success message"))
+    print(warning("Warning message"))
+    print(error("Error message"))
+    print(info("Info message"))
+    print(highlight("Highlighted text"))
+    print(progress_bar(75))
+    print(performance_indicator(2.5, "Array Creation"))
+    print(format_time(0.000123))
+    print(format_speedup(3.4))
+    print(separator())
+
+if __name__ == "__main__":
+    test_colors()

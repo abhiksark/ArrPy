@@ -5,7 +5,7 @@ This module provides functions for joining arrays along existing or new axes,
 such as concatenate, stack, vstack, and hstack.
 """
 
-from ..core.array import Array
+from ..core import Array
 
 
 def concatenate(arrays, axis=0):

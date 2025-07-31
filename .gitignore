@@ -155,6 +155,23 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Cython auto-generated files (specific to our .pyx files)
+arrpy/core/array_cython.c
+arrpy/math/arithmetic_cython.c
+arrpy/creation/basic_cython.c
+arrpy/core/array_cython.html
+arrpy/math/arithmetic_cython.html
+arrpy/creation/basic_cython.html
+
+# Cython compiled extensions
+*.pyd
+*.so
+*.dylib
+
+# Build directories (already covered above but ensuring Cython builds are ignored)
+build/
+dist/
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore

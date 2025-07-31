@@ -722,7 +722,7 @@ def benchmark_memory_usage():
 
 def run_comprehensive_benchmarks():
     """Run all benchmarks and generate summary report"""
-    print(ascii_logo())
+    print(logo_banner())
     print(header("COMPREHENSIVE PERFORMANCE COMPARISON", char="═", color=Colors.BRIGHT_CYAN))
     print(f"{info('Note: numpy is expected to be significantly faster as it is implemented in C')}")
     print(f"{info('This benchmark helps understand the performance trade-offs')}")

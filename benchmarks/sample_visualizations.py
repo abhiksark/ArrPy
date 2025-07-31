@@ -10,7 +10,7 @@ from ascii_charts import ASCIICharts
 
 def demo_colored_benchmark_output():
     """Demonstrate colorized benchmark output"""
-    print(ascii_logo())
+    print(logo_banner())
     print()
     
     # Simulate benchmark run with colors

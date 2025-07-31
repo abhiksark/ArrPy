@@ -181,7 +181,7 @@ def create_comprehensive_ascii_report(benchmark_results=None):
     """Create a comprehensive ASCII-based benchmark report"""
     charts = ASCIICharts()
     
-    print(ascii_logo())
+    print(logo_banner())
     print()
     
     # Sample data for demonstration
