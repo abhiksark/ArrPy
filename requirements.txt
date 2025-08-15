@@ -1,0 +1,2 @@
+# Core dependencies for ArrPy
+# Currently none - pure Python implementation
