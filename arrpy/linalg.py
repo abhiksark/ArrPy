@@ -20,7 +20,7 @@ def dot(a, b):
         Dot product
     """
     # TODO: Implement dot product
-    pass
+    raise NotImplementedError("linalg.dot is not implemented yet")
 
 
 def matmul(a, b):
