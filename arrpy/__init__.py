@@ -10,7 +10,7 @@ from .arrpy import arrpy
 
 # Array creation functions
 from .creation import (
-    zeros, ones, arange, linspace, array
+    zeros, ones, arange, linspace, array, full, empty, eye
 )
 
 # Data types
@@ -40,7 +40,7 @@ from .broadcasting import broadcast_arrays, broadcast_shapes
 __all__ = [
     '__version__',
     'arrpy',
-    'zeros', 'ones', 'arange', 'linspace', 'array',
+    'zeros', 'ones', 'arange', 'linspace', 'array', 'full', 'empty', 'eye',
     'int32', 'int64', 'float32', 'float64', 'bool_',
     'DType', 'infer_dtype',
     'ufuncs', 'linalg', 'random',

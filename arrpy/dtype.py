@@ -55,5 +55,31 @@ def infer_dtype(data):
     DType
         Inferred data type
     """
-    # TODO: Implement dtype inference
-    return DEFAULT_FLOAT_TYPE
+    if not data:
+        return DEFAULT_FLOAT_TYPE
+    
+    # Check if all elements are booleans
+    all_bool = True
+    # Check if all elements are integers
+    all_int = True
+    # Check if any element is complex
+    has_complex = False
+    
+    for item in data:
+        if not isinstance(item, bool):
+            all_bool = False
+        if not isinstance(item, (bool, int)):
+            all_int = False
+        if isinstance(item, complex):
+            has_complex = True
+            break
+    
+    if has_complex:
+        # Complex numbers not yet supported
+        return DEFAULT_FLOAT_TYPE
+    elif all_bool:
+        return bool_
+    elif all_int:
+        return DEFAULT_INT_TYPE
+    else:
+        return DEFAULT_FLOAT_TYPE
