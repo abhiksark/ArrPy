@@ -1,8 +1,9 @@
 """
-Array creation functions for arrpy.
+Array creation functions for ArrPy.
 """
 
-from .arrpy import arrpy
+import array as pyarray  # Rename to avoid conflict with array() function
+from .arrpy_backend import ArrPy
 from .dtype import float64, int64
 
 
@@ -35,12 +36,22 @@ def zeros(shape, dtype=None):
     for dim in shape:
         size *= dim
     
-    # Create zero data
-    zero_value = dtype.python_type(0)
-    data = [zero_value] * size
+    # Create zero data using pyarray.array for efficiency
+    if dtype.name == 'float64':
+        data = pyarray.array('d', [0.0] * size)
+    elif dtype.name == 'float32':
+        data = pyarray.array('f', [0.0] * size)
+    elif dtype.name == 'int64':
+        data = pyarray.array('l', [0] * size)
+    elif dtype.name == 'int32':
+        data = pyarray.array('i', [0] * size)
+    else:
+        # Fallback to double array
+        zero_value = dtype.python_type(0)
+        data = pyarray.array('d', [float(zero_value)] * size)
     
     # Create array from flat data
-    result = arrpy.__new__(arrpy)
+    result = ArrPy.__new__(ArrPy)
     result._data = data
     result._shape = shape
     result._dtype = dtype
@@ -79,12 +90,22 @@ def ones(shape, dtype=None):
     for dim in shape:
         size *= dim
     
-    # Create one data
-    one_value = dtype.python_type(1)
-    data = [one_value] * size
+    # Create one data using pyarray.array for efficiency
+    if dtype.name == 'float64':
+        data = pyarray.array('d', [1.0] * size)
+    elif dtype.name == 'float32':
+        data = pyarray.array('f', [1.0] * size)
+    elif dtype.name == 'int64':
+        data = pyarray.array('l', [1] * size)
+    elif dtype.name == 'int32':
+        data = pyarray.array('i', [1] * size)
+    else:
+        # Fallback to double array
+        one_value = dtype.python_type(1)
+        data = pyarray.array('d', [float(one_value)] * size)
     
     # Create array from flat data
-    result = arrpy.__new__(arrpy)
+    result = ArrPy.__new__(ArrPy)
     result._data = data
     result._shape = shape
     result._dtype = dtype
@@ -131,12 +152,22 @@ def full(shape, fill_value, dtype=None):
     for dim in shape:
         size *= dim
     
-    # Create filled data
-    value = dtype.python_type(fill_value)
-    data = [value] * size
+    # Create filled data using pyarray.array for efficiency
+    if dtype.name == 'float64':
+        data = pyarray.array('d', [float(fill_value)] * size)
+    elif dtype.name == 'float32':
+        data = pyarray.array('f', [float(fill_value)] * size)
+    elif dtype.name == 'int64':
+        data = pyarray.array('l', [int(fill_value)] * size)
+    elif dtype.name == 'int32':
+        data = pyarray.array('i', [int(fill_value)] * size)
+    else:
+        # Fallback to double array
+        value = dtype.python_type(fill_value)
+        data = pyarray.array('d', [float(value)] * size)
     
     # Create array from flat data
-    result = arrpy.__new__(arrpy)
+    result = ArrPy.__new__(ArrPy)
     result._data = data
     result._shape = shape
     result._dtype = dtype
@@ -213,12 +244,22 @@ def arange(start, stop=None, step=1, dtype=None):
         else:
             dtype = int64
     
-    # Convert values to desired dtype
-    values = [dtype.python_type(v) for v in values]
+    # Convert values to pyarray.array with desired dtype
+    if dtype.name == 'float64':
+        data = pyarray.array('d', [float(v) for v in values])
+    elif dtype.name == 'float32':
+        data = pyarray.array('f', [float(v) for v in values])
+    elif dtype.name == 'int64':
+        data = pyarray.array('l', [int(v) for v in values])
+    elif dtype.name == 'int32':
+        data = pyarray.array('i', [int(v) for v in values])
+    else:
+        # Fallback to double array
+        data = pyarray.array('d', [float(dtype.python_type(v)) for v in values])
     
     # Create array
-    result = arrpy.__new__(arrpy)
-    result._data = values
+    result = ArrPy.__new__(ArrPy)
+    result._data = data
     result._shape = (len(values),)
     result._dtype = dtype
     result._size = len(values)
@@ -271,12 +312,22 @@ def linspace(start, stop, num=50, endpoint=True, dtype=None):
     if dtype is None:
         dtype = float64
     
-    # Convert to desired dtype
-    values = [dtype.python_type(v) for v in values]
+    # Convert to pyarray.array with desired dtype
+    if dtype.name == 'float64':
+        data = pyarray.array('d', [float(v) for v in values])
+    elif dtype.name == 'float32':
+        data = pyarray.array('f', [float(v) for v in values])
+    elif dtype.name == 'int64':
+        data = pyarray.array('l', [int(v) for v in values])
+    elif dtype.name == 'int32':
+        data = pyarray.array('i', [int(v) for v in values])
+    else:
+        # Fallback to double array
+        data = pyarray.array('d', [float(dtype.python_type(v)) for v in values])
     
     # Create array
-    result = arrpy.__new__(arrpy)
-    result._data = values
+    result = ArrPy.__new__(ArrPy)
+    result._data = data
     result._shape = (len(values),)
     result._dtype = dtype
     result._size = len(values)
@@ -315,7 +366,7 @@ def eye(N, M=None, k=0, dtype=None):
     result = zeros((N, M), dtype=dtype)
     
     # Set diagonal elements to 1
-    one = dtype.python_type(1)
+    one = dtype.python_type(1) if not hasattr(dtype, 'name') else 1.0
     for i in range(N):
         j = i + k
         if 0 <= j < M:
@@ -340,4 +391,4 @@ def array(data, dtype=None):
     arrpy
         Array created from input data
     """
-    return arrpy(data, dtype=dtype)
+    return ArrPy(data, dtype=dtype)

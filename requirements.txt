@@ -1,2 +1,9 @@
-# Core dependencies for ArrPy
-# Currently none - pure Python implementation
+# ArrPy Core Requirements
+# Pure Python implementation has minimal dependencies
+
+# Build dependencies
+numpy>=1.20.0    # Required for Cython extensions and comparisons
+cython>=0.29.0   # For building Cython extensions
+
+# Development dependencies (optional)
+# Install with: pip install -r requirements-dev.txt

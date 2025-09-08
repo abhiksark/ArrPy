@@ -35,10 +35,13 @@ int64 = DType('int64', 8, int)
 float32 = DType('float32', 4, float)
 float64 = DType('float64', 8, float)
 bool_ = DType('bool', 1, bool)
+complex64 = DType('complex64', 8, complex)
+complex128 = DType('complex128', 16, complex)
 
 # Default types
 DEFAULT_INT_TYPE = int64
 DEFAULT_FLOAT_TYPE = float64
+DEFAULT_COMPLEX_TYPE = complex128
 
 
 def infer_dtype(data):
@@ -75,8 +78,7 @@ def infer_dtype(data):
             break
     
     if has_complex:
-        # Complex numbers not yet supported
-        return DEFAULT_FLOAT_TYPE
+        return DEFAULT_COMPLEX_TYPE
     elif all_bool:
         return bool_
     elif all_int:
