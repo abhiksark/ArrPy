@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # Production service
+  arrpy:
+    build:
+      context: .
+      target: runtime
+    image: arrpy:latest
+    container_name: arrpy
+    environment:
+      - ARRPY_BACKEND=python
+    volumes:
+      - ./data:/data
+    command: python examples/showcase.py
+
+  # Development service with Jupyter
+  arrpy-dev:
+    build:
+      context: .
+      target: development
+    image: arrpy:dev
+    container_name: arrpy-dev
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/workspace
+      - jupyter-data:/home/arrpy/.jupyter
+    environment:
+      - ARRPY_BACKEND=cython
+      - JUPYTER_ENABLE_LAB=yes
+    command: jupyter lab --ip=0.0.0.0 --no-browser --allow-root
+
+  # Testing service
+  arrpy-test:
+    build:
+      context: .
+      target: testing
+    image: arrpy:test
+    container_name: arrpy-test
+    volumes:
+      - .:/app
+      - test-results:/results
+    environment:
+      - ARRPY_BACKEND=python
+    command: >
+      sh -c "
+        pytest tests/ -v --cov=arrpy --cov-report=html:/results/coverage --cov-report=term &&
+        python benchmarks/benchmark_v1.py --json > /results/benchmarks.json
+      "
+
+  # Benchmarking service
+  arrpy-bench:
+    build:
+      context: .
+      target: runtime
+    image: arrpy:latest
+    container_name: arrpy-bench
+    volumes:
+      - ./benchmarks:/app/benchmarks
+      - benchmark-results:/results
+    environment:
+      - ARRPY_BACKEND=cython
+    command: >
+      sh -c "
+        echo 'Running benchmarks for all backends...' &&
+        ARRPY_BACKEND=python python benchmarks/benchmark_v1.py > /results/python.txt &&
+        ARRPY_BACKEND=cython python benchmarks/benchmark_v1.py > /results/cython.txt &&
+        echo 'Benchmarks complete. Results in /results/'
+      "
+
+  # Documentation builder
+  arrpy-docs:
+    build:
+      context: .
+      target: runtime
+    image: arrpy:latest
+    container_name: arrpy-docs
+    volumes:
+      - ./docs:/app/docs
+    working_dir: /app
+    command: >
+      sh -c "
+        pip install sphinx sphinx-rtd-theme &&
+        sphinx-quickstart -q -p ArrPy -a 'ArrPy Team' -v 1.0.0 --ext-autodoc --ext-viewcode --makefile docs/ &&
+        cd docs && make html &&
+        echo 'Documentation built in docs/_build/html/'
+      "
+
+volumes:
+  jupyter-data:
+  test-results:
+  benchmark-results:
+
+networks:
+  default:
+    name: arrpy-network
