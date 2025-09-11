@@ -1,8 +1,9 @@
 """
-Setup script for ArrPy package with Cython extensions.
+Setup script for building Cython extensions.
+Configuration is in pyproject.toml - this file only handles extension building.
 """
 
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, Extension
 import numpy as np
 
 # Try to use Cython if available
@@ -12,9 +13,6 @@ try:
 except ImportError:
     USE_CYTHON = False
     print("Warning: Cython not available, building without Cython extensions")
-
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
 
 # Define Cython extensions if available
 ext_modules = []
@@ -61,47 +59,8 @@ if USE_CYTHON:
         }
     )
 
+# Configuration is now in pyproject.toml
+# This setup.py is only for building Cython extensions
 setup(
-    name="arrpy",
-    version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
-    description="Educational NumPy recreation for learning internals",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/arrpy",
-    packages=find_packages(),
     ext_modules=ext_modules,
-    classifiers=[
-        "Programming Language :: Cython",
-        "Development Status :: 3 - Alpha",
-        "Intended Audience :: Developers",
-        "Intended Audience :: Education",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Scientific/Engineering :: Mathematics",
-        "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-    ],
-    python_requires=">=3.8",
-    install_requires=[
-        "numpy>=1.20.0",  # Required for Cython extensions
-    ],
-    setup_requires=[
-        "numpy>=1.20.0",
-        "cython>=0.29.0",
-    ],
-    extras_require={
-        "dev": [
-            "pytest>=7.0.0",
-            "pytest-cov>=4.0.0",
-            "pytest-benchmark>=4.0.0",
-            "numpy>=1.20.0",  # For testing comparison
-            "ruff>=0.1.0",
-            "black>=23.0.0",
-        ],
-    },
 )

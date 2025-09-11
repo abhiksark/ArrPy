@@ -1,31 +1,41 @@
 # ArrPy Documentation
 
-This directory contains comprehensive documentation for the ArrPy project.
+## Quick Start
 
-## Structure
+ArrPy is an educational NumPy recreation with three backends (Python, Cython, C++) to demonstrate optimization techniques.
 
-### 📚 `/user/` - User Documentation
-- `PROJECT_OVERVIEW.md` - Complete project overview and architecture
-- `ROADMAP.md` - Development roadmap and future plans
-- `MAKEFILE_USAGE.md` - How to use the Makefile commands
+```python
+import arrpy
 
-### 🔧 `/development/` - Development Documentation
-- `ARCHITECTURE_FIX_PLAN.md` - Architecture improvement plans
-- `UNIFIED_ARRAY_ANALYSIS.md` - Analysis of array storage approaches
-- `ARRAY_BACKEND_SUMMARY.md` - Backend implementation details
-- `IMPLEMENTATION_COMPLETE.md` - Implementation status and notes
-- `README_v1.md` - Original version 1.0 README
+# Create arrays
+a = arrpy.array([1, 2, 3, 4])
+b = arrpy.ones(4)
 
-### 📊 `/benchmarks/` - Performance Documentation
-- `PERFORMANCE_ANALYSIS.md` - Detailed performance analysis
-- `PERFORMANCE_SUMMARY.md` - Performance summary and results
-- `FINAL_RESULTS.md` - Final benchmark results
-- `FINAL_SUMMARY.md` - Project completion summary
-- `CPP_OPTIMIZATION_RESULTS.md` - C++ optimization analysis
+# Basic operations
+c = a + b
+d = arrpy.sum(a)
 
-## Quick Links
+# Switch backends for performance comparison
+arrpy.set_backend('cython')  # Use optimized backend
+e = arrpy.matmul(a.reshape(2, 2), b.reshape(2, 2))
+```
 
-- [Getting Started](user/PROJECT_OVERVIEW.md)
-- [Performance Results](benchmarks/FINAL_RESULTS.md)
-- [Development Roadmap](user/ROADMAP.md)
-- [Architecture Details](development/ARRAY_BACKEND_SUMMARY.md)
+## Key Documentation
+
+- [API Reference](API_REFERENCE.md) - Complete API documentation
+- [Backend Guide](BACKEND_GUIDE.md) - Understanding the three-backend system
+- [Performance](PERFORMANCE.md) - Benchmark results and analysis
+
+## Current Status
+
+- **Python Backend**: ~95% complete - Most NumPy operations implemented
+- **Cython Backend**: ~10% complete - Key operations optimized (add, multiply, matmul, sum, sqrt)
+- **C++ Backend**: ~5% complete - Only matmul implemented with SIMD
+- **Test Coverage**: 180 tests passing, 31 skipped (unimplemented features)
+
+## Not Implemented
+
+- 2D/multi-dimensional indexing (use fancy indexing instead)
+- Boolean array indexing (array.array storage limitation)
+- File I/O operations
+- Advanced linear algebra (QR, SVD, eigenvalues)

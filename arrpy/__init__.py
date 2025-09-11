@@ -50,12 +50,7 @@ from .sorting import (
     sort, argsort, searchsorted, partition, unique
 )
 
-# FFT operations
-from . import fft
-from .fft import (
-    fft as fft_func, ifft, fft2, rfft, fftfreq, fftshift,
-    convolve, dct, idct
-)
+# Note: FFT operations removed - require complex number support
 
 # Advanced indexing
 from .indexing import (
@@ -99,7 +94,7 @@ __all__ = [
     'int32', 'int64', 'float32', 'float64', 'bool_',
     'DType', 'infer_dtype',
     # Modules
-    'ufuncs', 'linalg', 'random', 'fft',
+    'ufuncs', 'linalg', 'random',
     # Ufuncs
     'sin', 'cos', 'tan', 'exp', 'log', 'log10', 'sqrt', 'square', 'absolute', 'abs',
     'add', 'subtract', 'multiply', 'divide', 'power', 'mod',
@@ -110,9 +105,6 @@ __all__ = [
     'solve', 'inv', 'det', 'eig', 'svd', 'qr', 'cholesky', 'matrix_rank',
     # Sorting and searching
     'sort', 'argsort', 'searchsorted', 'partition', 'unique',
-    # FFT operations
-    'fft_func', 'ifft', 'fft2', 'rfft', 'fftfreq', 'fftshift',
-    'convolve', 'dct', 'idct',
     # Advanced indexing
     'where', 'fancy_index', 'boolean_index',
     # Statistics

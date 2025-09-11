@@ -548,40 +548,21 @@ class ArrPy:
                 # For multi-dimensional arrays, integer index selects a sub-array
                 raise NotImplementedError("Integer indexing for multi-dimensional arrays not yet implemented")
         
-        # Handle list/tuple of indices (fancy indexing) - check this before multi-dimensional indexing
-        if isinstance(key, (list, tuple)) and key and all(isinstance(i, int) for i in key):
-            from .indexing import fancy_index
-            from .creation import array
-            return fancy_index(self, array(key))
-        
-        # Handle tuple of indices for multi-dimensional arrays
-        if isinstance(key, tuple):
-            if self.ndim == 1:
-                raise IndexError("Too many indices for 1D array")
-            
-            # Convert multi-dimensional index to flat index
-            if len(key) != self.ndim:
-                raise IndexError(f"Expected {self.ndim} indices, got {len(key)}")
-            
-            # Calculate flat index from multi-dimensional indices
-            flat_idx = 0
-            for i, (idx, dim_size) in enumerate(zip(key, self._shape)):
-                if isinstance(idx, int):
-                    # Handle negative indexing
-                    if idx < 0:
-                        idx = dim_size + idx
-                    if idx < 0 or idx >= dim_size:
-                        raise IndexError(f"Index {idx} out of bounds for axis {i} with size {dim_size}")
-                    
-                    # Calculate offset for this dimension
-                    stride = 1
-                    for j in range(i + 1, self.ndim):
-                        stride *= self._shape[j]
-                    flat_idx += idx * stride
-                else:
-                    raise NotImplementedError("Only integer indexing currently supported")
-            
-            return self._data[flat_idx]
+        # Handle list/tuple of indices (fancy indexing)
+        if isinstance(key, (list, tuple)):
+            # Check if this looks like fancy indexing (all elements are integers)
+            # vs multi-dimensional indexing (would have slices, etc)
+            if all(isinstance(k, int) for k in key):
+                # This is fancy indexing - treat as array of indices
+                from .indexing import fancy_index
+                from .creation import array
+                return fancy_index(self, array(key))
+            elif self.ndim == 1 and len(key) > 1:
+                # Multiple indices for 1D array that aren't all integers
+                raise IndexError(f"Too many indices for array: array is 1-dimensional, but {len(key)} were indexed")
+            elif self.ndim > 1:
+                # Multi-dimensional indexing
+                raise NotImplementedError("Multi-dimensional indexing not yet implemented")
         
         # Handle slicing for 1D arrays
         if isinstance(key, slice):

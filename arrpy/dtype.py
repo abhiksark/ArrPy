@@ -60,17 +60,20 @@ def infer_dtype(data):
     
     # Check if all elements are booleans
     all_bool = True
-    # Check if all elements are integers
+    # Check if all elements are integers (but not booleans)
     all_int = True
     
     for item in data:
+        # Check bool first (since bool is subclass of int in Python)
         if not isinstance(item, bool):
             all_bool = False
-        if not isinstance(item, (bool, int)):
+        # Check if integer (but exclude booleans)
+        if isinstance(item, bool) or not isinstance(item, int):
             all_int = False
-            if isinstance(item, complex):
-                raise TypeError("Complex numbers are not supported in ArrPy")
+        if isinstance(item, complex):
+            raise TypeError("Complex numbers are not supported in ArrPy")
     
+    # Check bool first since bool is subclass of int
     if all_bool:
         return bool_
     elif all_int:

@@ -14,7 +14,6 @@ Which operation(s) would be optimized?
 - [ ] Linear algebra
 - [ ] Reductions
 - [ ] Universal functions
-- [ ] FFT/Signal processing
 - [ ] Other: [please specify]
 
 ## Current Performance

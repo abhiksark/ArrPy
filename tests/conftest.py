@@ -5,6 +5,23 @@ Pytest configuration and fixtures for ArrPy tests.
 import pytest
 import numpy as np
 import arrpy as ap
+import arrpy
+
+
+@pytest.fixture(autouse=True)
+def reset_backend():
+    """
+    Automatically reset backend to Python before each test.
+    This ensures test isolation and prevents backend state leakage.
+    """
+    # Reset to Python backend before test
+    arrpy.set_backend('python')
+    
+    # Run the test
+    yield
+    
+    # Reset to Python backend after test (cleanup)
+    arrpy.set_backend('python')
 
 
 @pytest.fixture
@@ -90,3 +107,30 @@ def benchmark_data():
         'large': (1000, 1000),
         'xlarge': (5000, 5000)
     }
+
+
+@pytest.fixture
+def python_backend():
+    """Fixture that ensures Python backend is active."""
+    original = arrpy.get_backend()
+    arrpy.set_backend('python')
+    yield
+    arrpy.set_backend(original)
+
+
+@pytest.fixture
+def cython_backend():
+    """Fixture that ensures Cython backend is active."""
+    original = arrpy.get_backend()
+    arrpy.set_backend('cython')
+    yield
+    arrpy.set_backend(original)
+
+
+@pytest.fixture
+def c_backend():
+    """Fixture that ensures C backend is active."""
+    original = arrpy.get_backend()
+    arrpy.set_backend('c')
+    yield
+    arrpy.set_backend(original)
