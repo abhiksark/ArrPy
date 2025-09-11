@@ -32,6 +32,10 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
     
+    - name: Install package
+      run: |
+        pip install -e .
+    
     - name: Build Cython extensions
       if: matrix.backend == 'cython'
       run: |
@@ -66,6 +70,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install numpy pytest tabulate
     
+    - name: Install package
+      run: |
+        pip install -e .
+    
     - name: Run quick tests
       run: |
         ARRPY_BACKEND=python pytest tests/ --ignore=tests/experimental -q --tb=no
@@ -91,6 +99,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest
+    
+    - name: Install package
+      run: |
+        pip install -e .
     
     - name: Build Cython extensions
       run: |
