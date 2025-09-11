@@ -271,13 +271,15 @@ def _determinant_python(data, shape):
         # Singular matrix
         return 0.0
     
-    # Count permutation swaps for sign
+    # Count actual number of swaps for sign
+    # We need to count inversions in the permutation
     swaps = 0
     for i in range(n):
-        if P[i] != i:
-            swaps += 1
+        for j in range(i + 1, n):
+            if P[i] > P[j]:
+                swaps += 1
     
-    # Determinant is product of U diagonal elements
+    # Determinant is product of U diagonal elements with sign from permutation
     det = 1.0 if swaps % 2 == 0 else -1.0
     for i in range(n):
         det *= U_flat[i * n + i]

@@ -35,13 +35,10 @@ int64 = DType('int64', 8, int)
 float32 = DType('float32', 4, float)
 float64 = DType('float64', 8, float)
 bool_ = DType('bool', 1, bool)
-complex64 = DType('complex64', 8, complex)
-complex128 = DType('complex128', 16, complex)
 
 # Default types
 DEFAULT_INT_TYPE = int64
 DEFAULT_FLOAT_TYPE = float64
-DEFAULT_COMPLEX_TYPE = complex128
 
 
 def infer_dtype(data):
@@ -65,21 +62,16 @@ def infer_dtype(data):
     all_bool = True
     # Check if all elements are integers
     all_int = True
-    # Check if any element is complex
-    has_complex = False
     
     for item in data:
         if not isinstance(item, bool):
             all_bool = False
         if not isinstance(item, (bool, int)):
             all_int = False
-        if isinstance(item, complex):
-            has_complex = True
-            break
+            if isinstance(item, complex):
+                raise TypeError("Complex numbers are not supported in ArrPy")
     
-    if has_complex:
-        return DEFAULT_COMPLEX_TYPE
-    elif all_bool:
+    if all_bool:
         return bool_
     elif all_int:
         return DEFAULT_INT_TYPE

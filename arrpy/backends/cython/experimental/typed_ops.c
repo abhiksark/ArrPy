@@ -9,7 +9,7 @@
             "-ffast-math"
         ],
         "include_dirs": [
-            "/private/var/folders/27/4p6h8d6s5z1dzk8lvp06664r0000gn/T/pip-build-env-s6bra7tt/overlay/lib/python3.9/site-packages/numpy/_core/include"
+            "/private/var/folders/27/4p6h8d6s5z1dzk8lvp06664r0000gn/T/pip-build-env-uytepg0d/overlay/lib/python3.9/site-packages/numpy/_core/include"
         ],
         "name": "arrpy.backends.cython.experimental.typed_ops",
         "sources": [

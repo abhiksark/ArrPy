@@ -1,6 +1,12 @@
 # ArrPy Development Makefile with ASCII Banner
 # Simplifies common development tasks
 
+# Detect Python executable (prefer python, fallback to python3)
+PYTHON := $(shell command -v python 2>/dev/null || command -v python3 2>/dev/null)
+ifeq ($(PYTHON),)
+    $(error Python is not installed. Please install Python 3.x)
+endif
+
 # Colors for terminal output
 RED := \033[0;31m
 GREEN := \033[0;32m
@@ -22,7 +28,7 @@ $(CYAN)
                             /____/      
 $(RESET)
 $(YELLOW) 🚀 Educational NumPy Recreation$(RESET)
-$(GREEN) 📚 Learn by Building | v0.1.0$(RESET)
+$(GREEN) 📚 Learn by Building | v1.0$(RESET)
 $(BLUE)════════════════════════════════════════$(RESET)
 endef
 export ARRPY_BANNER
@@ -106,8 +112,32 @@ test: banner test-unit test-compat
 
 test-unit: 
 	@echo "$(CYAN)Running unit tests...$(RESET)"
-	pytest tests/ -v --ignore=tests/test_numpy_compat.py
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--color=yes \
+		--tb=short \
+		-q \
+		--no-header \
+		-rA
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
 	@echo "$(GREEN)✓ Unit tests complete!$(RESET)"
+
+test-pretty: banner
+	@echo "$(CYAN)Running tests with pretty output...$(RESET)"
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--color=yes \
+		--tb=short \
+		--no-header \
+		--co -q | head -20
+	@echo ""
+	@echo "$(YELLOW)Running tests...$(RESET)"
+	@pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--color=yes \
+		--tb=no \
+		--no-header \
+		-q
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
 
 # NumPy compatibility testing
 test-compat: banner
@@ -134,15 +164,24 @@ test-compat-c:
 # Backend-specific tests
 test-python:
 	@echo "$(YELLOW)Testing Python backend...$(RESET)"
-	ARRPY_BACKEND=python pytest tests/ -v --ignore=tests/test_numpy_compat.py
+	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
+	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--color=yes --tb=line -q --no-header -rN
+	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
 
 test-cython:
 	@echo "$(YELLOW)Testing Cython backend...$(RESET)"
-	ARRPY_BACKEND=cython pytest tests/ -v --ignore=tests/test_numpy_compat.py
+	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
+	@ARRPY_BACKEND=cython pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--color=yes --tb=line -q --no-header -rN
+	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
 
 test-c:
 	@echo "$(YELLOW)Testing C++ backend...$(RESET)"
-	ARRPY_BACKEND=c pytest tests/ -v --ignore=tests/test_numpy_compat.py
+	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
+	@ARRPY_BACKEND=c pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--color=yes --tb=line -q --no-header -rN
+	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
 
 test-coverage: banner
 	@echo "$(CYAN)Running tests with coverage...$(RESET)"
@@ -152,28 +191,28 @@ test-coverage: banner
 # Benchmark targets with banner
 bench: banner
 	@echo "$(MAGENTA)Running benchmarks...$(RESET)"
-	python benchmarks/benchmark_v1.py
+	$(PYTHON) benchmarks/benchmark_v1.py
 
 bench-python:
 	@echo "$(YELLOW)Benchmarking Python backend...$(RESET)"
-	ARRPY_BACKEND=python python benchmarks/bench_core.py
+	ARRPY_BACKEND=python $(PYTHON) benchmarks/bench_core.py
 
 bench-cython:
 	@echo "$(YELLOW)Benchmarking Cython backend...$(RESET)"
-	ARRPY_BACKEND=cython python benchmarks/bench_core.py
+	ARRPY_BACKEND=cython $(PYTHON) benchmarks/bench_core.py
 
 bench-c:
 	@echo "$(YELLOW)Benchmarking C++ backend...$(RESET)"
-	ARRPY_BACKEND=c python benchmarks/bench_core.py
+	ARRPY_BACKEND=c $(PYTHON) benchmarks/bench_core.py
 
 bench-compare: banner
 	@echo "$(MAGENTA)Comparing all backends...$(RESET)"
-	python benchmarks/compare_backends.py
+	$(PYTHON) benchmarks/compare_backends.py
 	@echo "$(GREEN)✓ Comparison complete!$(RESET)"
 
 bench-vs-numpy: banner
 	@echo "$(MAGENTA)Benchmarking against NumPy...$(RESET)"
-	python benchmarks/benchmark_vs_numpy.py
+	$(PYTHON) benchmarks/benchmark_vs_numpy.py
 
 # Build targets with banner
 build: banner build-cython build-cpp
@@ -181,17 +220,17 @@ build: banner build-cython build-cpp
 
 build-cython:
 	@echo "$(CYAN)Building Cython extensions...$(RESET)"
-	python setup.py build_ext --inplace
+	$(PYTHON) setup.py build_ext --inplace
 	@echo "$(GREEN)✓ Cython build complete!$(RESET)"
 
 build-cpp:
 	@echo "$(CYAN)Building C++ extensions...$(RESET)"
-	python setup_extensions/setup_buffer_cpp.py build_ext --inplace
+	$(PYTHON) setup_extensions/setup_buffer_cpp.py build_ext --inplace
 	@echo "$(GREEN)✓ C++ build complete!$(RESET)"
 
 build-cpp-optimized:
 	@echo "$(CYAN)Building optimized C++ extensions...$(RESET)"
-	python setup_extensions/setup_optimized_cpp.py build_ext --inplace
+	$(PYTHON) setup_extensions/setup_optimized_cpp.py build_ext --inplace
 	@echo "$(GREEN)✓ Optimized C++ build complete!$(RESET)"
 
 # Clean target with banner
@@ -213,7 +252,7 @@ clean: banner
 status: banner
 	@echo "$(WHITE)Backend Status:$(RESET)"
 	@echo "$(CYAN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@python scripts/check_backends.py 2>/dev/null || python -c "import arrpy; print('✓ Python backend: Available')"
+	@$(PYTHON) scripts/check_backends.py 2>/dev/null || $(PYTHON) -c "import arrpy; print('✓ Python backend: Available')"
 	@echo "$(CYAN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
 # Quick start guide
@@ -227,10 +266,32 @@ quickstart: banner
 	@echo "5. $(GREEN)make status$(RESET)      # Check backend availability"
 	@echo "$(CYAN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
+# Test summary - shows test results in a nice format
+test-summary: 
+	@echo "$(CYAN)Test Summary for All Backends$(RESET)"
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@echo ""
+	@echo "$(YELLOW)Python Backend:$(RESET)"
+	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--co -q --tb=no 2>&1 | grep "test session" || true
+	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--tb=no -q 2>&1 | tail -1
+	@echo ""
+	@echo "$(YELLOW)Cython Backend:$(RESET)"
+	@ARRPY_BACKEND=cython pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--tb=no -q 2>&1 | tail -1
+	@echo ""
+	@echo "$(YELLOW)C++ Backend:$(RESET)"
+	@ARRPY_BACKEND=c pytest tests/ --ignore=tests/test_numpy_compat.py \
+		--tb=no -q 2>&1 | tail -1
+	@echo ""
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@echo "$(GREEN)✓ Summary complete$(RESET)"
+
 # Interactive demo
 demo: banner
 	@echo "$(MAGENTA)Starting ArrPy interactive demo...$(RESET)"
-	@python -c "import arrpy; \
+	@$(PYTHON) -c "import arrpy; \
 		print('Creating arrays...'); \
 		a = arrpy.arange(10); \
 		b = arrpy.ones(10); \
