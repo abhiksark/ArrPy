@@ -38,7 +38,8 @@ export ARRPY_BANNER
 
 .PHONY: banner banner-help help install dev test bench clean build docs \
         test-python test-cython test-c bench-python bench-cython bench-c \
-        build-cython build-cpp status
+        build-cython build-cpp status experimental exp-test exp-quick \
+        features features-detailed features-json
 
 # Show banner only
 banner:
@@ -55,6 +56,7 @@ banner-help: banner
 	@echo "$(GREEN)make clean$(RESET)      - Clean build artifacts"
 	@echo "$(GREEN)make build$(RESET)      - Build all extensions"
 	@echo "$(GREEN)make status$(RESET)     - Show backend status"
+	@echo "$(GREEN)make features$(RESET)   - Show feature implementation matrix"
 	@echo ""
 	@echo "$(WHITE)Backend-specific commands:$(RESET)"
 	@echo "$(CYAN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
@@ -62,6 +64,11 @@ banner-help: banner
 	@echo "$(YELLOW)make test-cython$(RESET)  - Test Cython backend"
 	@echo "$(YELLOW)make test-c$(RESET)       - Test C++ backend"
 	@echo "$(YELLOW)make bench-compare$(RESET) - Compare all backends"
+	@echo ""
+	@echo "$(WHITE)Experimental features:$(RESET)"
+	@echo "$(CYAN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "$(MAGENTA)make experimental$(RESET) - Run experimental demos"
+	@echo "$(MAGENTA)make exp-test$(RESET)     - Test experimental features"
 	@echo ""
 	@echo "$(WHITE)Build commands:$(RESET)"
 	@echo "$(CYAN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
@@ -226,6 +233,7 @@ build-cython:
 build-cpp:
 	@echo "$(CYAN)Building C++ extensions...$(RESET)"
 	$(PYTHON) setup_extensions/setup_buffer_cpp.py build_ext --inplace
+	$(PYTHON) setup_extensions/setup_cpp.py build_ext --inplace
 	@echo "$(GREEN)✓ C++ build complete!$(RESET)"
 
 build-cpp-optimized:
@@ -305,6 +313,56 @@ demo: banner
 		print('  arrpy.set_backend(\"python\")'); \
 		print('  arrpy.set_backend(\"cython\")'); \
 		print('  arrpy.set_backend(\"c\")')"
+
+# Experimental features
+experimental: banner
+	@echo "$(MAGENTA)🧪 Running Experimental Features Demo$(RESET)"
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@$(PYTHON) run_experimental.py
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@echo "$(GREEN)✓ Experimental demo complete!$(RESET)"
+
+exp-test: banner
+	@echo "$(MAGENTA)🧪 Testing Experimental Features$(RESET)"
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@echo ""
+	@echo "$(YELLOW)Testing alternative storage backends...$(RESET)"
+	@$(PYTHON) tests/experimental/test_array_alternatives.py | tail -20
+	@echo ""
+	@echo "$(YELLOW)Testing DLPack prototype...$(RESET)"
+	@$(PYTHON) tests/experimental/test_dlpack_prototype.py | head -10
+	@echo ""
+	@echo "$(YELLOW)Testing hybrid arrays...$(RESET)"
+	@$(PYTHON) tests/experimental/hybrid_array_prototype.py | head -10
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@echo "$(GREEN)✓ Experimental tests complete!$(RESET)"
+
+exp-quick: 
+	@echo "$(MAGENTA)Quick experimental check...$(RESET)"
+	@$(PYTHON) -c "from arrpy.backends.cython.experimental import typed_ops; \
+		import numpy as np; \
+		a = np.array([1.0, 2.0, 3.0]); \
+		result = typed_ops._add_float64(memoryview(a), memoryview(a)); \
+		print('✓ Typed ops working'); \
+		print(f'  Result: {list(result)[:3]}...')"
+
+# Feature matrix
+features: banner
+	@echo "$(MAGENTA)Generating Feature Implementation Matrix$(RESET)"
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@$(PYTHON) check_features.py
+	@echo ""
+	@echo "$(GREEN)✓ Feature matrix generated!$(RESET)"
+
+features-detailed: banner
+	@echo "$(MAGENTA)Generating Detailed Feature Matrix$(RESET)"
+	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
+	@$(PYTHON) check_features.py --detailed
+	@echo ""
+	@echo "$(GREEN)✓ Detailed matrix generated!$(RESET)"
+
+features-json:
+	@$(PYTHON) check_features.py --json
 
 # Development workflow
 workflow: banner

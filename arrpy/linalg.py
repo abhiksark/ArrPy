@@ -20,9 +20,10 @@ def dot(a, b):
         Dot product
     """
     from .arrpy_backend import ArrPy
-    from .creation import zeros
+    from .backend_selector import get_backend, Backend
+    import array
     
-    # Handle 1D x 1D -> scalar
+    # Handle 1D x 1D -> scalar (simple enough to not need backend dispatch)
     if a.ndim == 1 and b.ndim == 1:
         if a.shape[0] != b.shape[0]:
             raise ValueError(f"Shapes {a.shape} and {b.shape} not aligned")
@@ -37,56 +38,58 @@ def dot(a, b):
         if a.shape[1] != b.shape[0]:
             raise ValueError(f"Shapes {a.shape} and {b.shape} not aligned")
         
-        result_data = []
-        for i in range(a.shape[0]):
-            row_sum = 0
-            for j in range(a.shape[1]):
-                row_sum += a._data[i * a.shape[1] + j] * b._data[j]
-            result_data.append(row_sum)
-        
-        result = ArrPy.__new__(ArrPy)
-        result._data = result_data
-        result._shape = (a.shape[0],)
-        result._size = a.shape[0]
-        result._dtype = a._dtype
-        result._strides = (1,)
-        return result
+        # Use matrix multiplication with b reshaped to column vector
+        b_col = b.reshape(-1, 1)
+        result = dot(a, b_col)
+        return result.reshape(-1)
     
-    # Handle 1D x 2D -> 1D
+    # Handle 1D x 2D -> 1D  
     if a.ndim == 1 and b.ndim == 2:
         if a.shape[0] != b.shape[0]:
             raise ValueError(f"Shapes {a.shape} and {b.shape} not aligned")
         
-        result_data = []
-        for j in range(b.shape[1]):
-            col_sum = 0
-            for i in range(b.shape[0]):
-                col_sum += a._data[i] * b._data[i * b.shape[1] + j]
-            result_data.append(col_sum)
-        
-        result = ArrPy.__new__(ArrPy)
-        result._data = result_data
-        result._shape = (b.shape[1],)
-        result._size = b.shape[1]
-        result._dtype = a._dtype
-        result._strides = (1,)
-        return result
+        # Use matrix multiplication with a reshaped to row vector
+        a_row = a.reshape(1, -1)
+        result = dot(a_row, b)
+        return result.reshape(-1)
     
-    # Handle 2D x 2D -> 2D (matrix multiplication)
+    # Handle 2D x 2D -> 2D (matrix multiplication) with backend dispatch
     if a.ndim == 2 and b.ndim == 2:
         if a.shape[1] != b.shape[0]:
             raise ValueError(f"Shapes {a.shape} and {b.shape} not aligned: {a.shape[1]} != {b.shape[0]}")
         
-        m, k = a.shape
-        k2, n = b.shape
+        backend = get_backend()
         
-        result_data = []
-        for i in range(m):
-            for j in range(n):
-                sum_val = 0
-                for l in range(k):
-                    sum_val += a._data[i * k + l] * b._data[l * n + j]
-                result_data.append(sum_val)
+        # Dispatch to appropriate backend
+        if backend == Backend.PYTHON:
+            from .backends.python.linalg_ops import _matmul_python
+            result_data, result_shape = _matmul_python(a._data, b._data, a._shape, b._shape)
+        elif backend == Backend.CYTHON:
+            try:
+                from .backends.cython.linalg_ops import _matmul_cython
+                result_data, result_shape = _matmul_cython(a._data, b._data, a._shape, b._shape)
+            except (ImportError, AttributeError):
+                # Fallback to Python if Cython not available
+                from .backends.python.linalg_ops import _matmul_python
+                result_data, result_shape = _matmul_python(a._data, b._data, a._shape, b._shape)
+        elif backend == Backend.C:
+            try:
+                from .backends.c.linalg_ops import _matmul_c
+                result_data, result_shape = _matmul_c(a._data, b._data, a._shape, b._shape)
+            except (ImportError, AttributeError):
+                # Fallback to Python if C not available
+                from .backends.python.linalg_ops import _matmul_python
+                result_data, result_shape = _matmul_python(a._data, b._data, a._shape, b._shape)
+        else:
+            from .backends.python.linalg_ops import _matmul_python
+            result_data, result_shape = _matmul_python(a._data, b._data, a._shape, b._shape)
+        
+        # Convert result_data to array.array if it's a list
+        if isinstance(result_data, list):
+            result_data = array.array('d', result_data)
+        
+        m, _ = a.shape
+        _, n = b.shape
         
         result = ArrPy.__new__(ArrPy)
         result._data = result_data

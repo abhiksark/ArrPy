@@ -227,7 +227,6 @@ You explicitly choose performance vs. functionality.
     operations_to_test = [
         ('Addition', lambda a, b: a + b),
         ('Matrix multiply', lambda a, b: arrpy.matmul(a, b)),
-        ('FFT', lambda a, b: arrpy.fft_func(a)),
         ('Solve', lambda a, b: arrpy.solve(a, b))
     ]
     

@@ -34,11 +34,12 @@ def _add_c(data1, data2, shape1, shape2):
                 return result, shape1
                 
             except ImportError:
-                # Fall back to pure Python on array.array
-                result = array.array(data1.typecode)
-                for i in range(size1):
-                    result.append(data1[i] + data2[i])
-                return result, shape1
+                # C++ extension not compiled
+                raise NotImplementedError(
+                    "C++ backend not compiled. Run: make build-cpp\n"
+                    "Available in: python, cython\n"
+                    "Switch backends with: arrpy.set_backend('cython')"
+                )
         else:
             # Fall back to original list-based implementation
             from . import array_ops
@@ -46,8 +47,11 @@ def _add_c(data1, data2, shape1, shape2):
             
     except Exception as e:
         # Ultimate fallback to Python backend
-        from ..python import array_ops as py_ops
-        return py_ops._add_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            f"C++ backend encountered error: {e}\n"
+            "Available in: python, cython\n"
+            "Switch backends with: arrpy.set_backend('cython')"
+        )
 
 
 def _multiply_c(data1, data2, shape1, shape2):
@@ -94,18 +98,26 @@ def _multiply_c(data1, data2, shape1, shape2):
                     return result, shape1
                     
                 except ImportError:
-                    result = array.array(data1.typecode)
-                    for i in range(size1):
-                        result.append(data1[i] * data2[i])
-                    return result, shape1
+                    # C++ extension not compiled
+                    raise NotImplementedError(
+                        "C++ backend not compiled. Run: make build-cpp\n"
+                        "Available in: python, cython\n"
+                        "Switch backends with: arrpy.set_backend('cython')"
+                    )
         
         # Fallback
-        from ..python import array_ops as py_ops
-        return py_ops._multiply_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            f"C++ backend encountered error: {e}\n"
+            "Available in: python, cython\n"
+            "Switch backends with: arrpy.set_backend('cython')"
+        )
         
     except Exception:
-        from ..python import array_ops as py_ops
-        return py_ops._multiply_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            f"C++ backend encountered error: {e}\n"
+            "Available in: python, cython\n"
+            "Switch backends with: arrpy.set_backend('cython')"
+        )
 
 
 def _subtract_c(data1, data2, shape1, shape2):
@@ -129,17 +141,25 @@ def _subtract_c(data1, data2, shape1, shape2):
                 return result, shape1
                 
             except ImportError:
-                result = array.array(data1.typecode)
-                for i in range(size1):
-                    result.append(data1[i] - data2[i])
-                return result, shape1
+                # C++ extension not compiled
+                raise NotImplementedError(
+                    "C++ backend not compiled. Run: make build-cpp\n"
+                    "Available in: python\n"
+                    "Switch backends with: arrpy.set_backend('python')"
+                )
         
-        from ..python import array_ops as py_ops
-        return py_ops._subtract_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            "C++ backend not compiled. Run: make build-cpp\n"
+            "Available in: python\n"
+            "Switch backends with: arrpy.set_backend('python')"
+        )
         
     except Exception:
-        from ..python import array_ops as py_ops
-        return py_ops._subtract_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            "C++ backend not compiled. Run: make build-cpp\n"
+            "Available in: python\n"
+            "Switch backends with: arrpy.set_backend('python')"
+        )
 
 
 def _divide_c(data1, data2, shape1, shape2):
@@ -163,19 +183,22 @@ def _divide_c(data1, data2, shape1, shape2):
                 return result, shape1
                 
             except ImportError:
-                result = array.array(data1.typecode)
-                for i in range(size1):
-                    if data2[i] != 0:
-                        result.append(data1[i] / data2[i])
-                    else:
-                        result.append(float('inf') if data1[i] > 0 else
-                                    float('-inf') if data1[i] < 0 else
-                                    float('nan'))
-                return result, shape1
+                # C++ extension not compiled
+                raise NotImplementedError(
+                    "C++ backend not compiled. Run: make build-cpp\n"
+                    "Available in: python\n"
+                    "Switch backends with: arrpy.set_backend('python')"
+                )
         
-        from ..python import array_ops as py_ops
-        return py_ops._divide_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            "C++ backend not compiled. Run: make build-cpp\n"
+            "Available in: python\n"
+            "Switch backends with: arrpy.set_backend('python')"
+        )
         
     except Exception:
-        from ..python import array_ops as py_ops
-        return py_ops._divide_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            "C++ backend not compiled. Run: make build-cpp\n"
+            "Available in: python\n"
+            "Switch backends with: arrpy.set_backend('python')"
+        )

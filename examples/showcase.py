@@ -134,30 +134,7 @@ def showcase_linear_algebra():
     print(f"  R shape: {R.shape}")
 
 
-def showcase_fft():
-    """Demonstrate FFT operations."""
-    print_section("Fast Fourier Transform")
-    set_backend('python')
-    
-    # Create a signal
-    t = arrpy.linspace(0, 1, 64)
-    signal = arrpy.array([math.sin(2 * math.pi * 5 * t._data[i]) + 
-                          0.5 * math.sin(2 * math.pi * 10 * t._data[i]) 
-                          for i in range(64)])
-    
-    print("Signal: 5Hz + 10Hz sine waves")
-    
-    # Compute FFT
-    spectrum = arrpy.fft_func(signal)
-    print(f"FFT computed: shape={spectrum.shape}, dtype={spectrum.dtype}")
-    
-    # Compute frequencies
-    freqs = arrpy.fftfreq(64, 1/64)
-    print(f"Frequency bins: {freqs._data[:10]} ... Hz")
-    
-    # DCT for compression
-    dct_coeffs = arrpy.dct(signal)
-    print(f"\nDCT coefficients (first 5): {dct_coeffs._data[:5]}")
+# FFT functionality has been removed (requires complex number support)
 
 
 def showcase_statistics():
@@ -184,11 +161,11 @@ def showcase_statistics():
     cumsum = arrpy.cumsum(data)
     print(f"Cumsum: {cumsum._data[:5]} ...")
     
-    # Histogram
-    hist, edges = arrpy.histogram(data, bins=3)
-    print(f"\nHistogram (3 bins):")
-    print(f"  Counts: {hist._data}")
-    print(f"  Edges: {edges._data}")
+    # Histogram (not implemented)
+    # hist, edges = arrpy.histogram(data, bins=3)
+    # print(f"\nHistogram (3 bins):")
+    # print(f"  Counts: {hist._data}")
+    # print(f"  Edges: {edges._data}")
 
 
 def showcase_indexing():
@@ -219,40 +196,15 @@ def showcase_io():
     print_section("I/O Operations")
     set_backend('python')
     
-    import tempfile
-    
-    # Create test data
-    data = arrpy.array([[1, 2, 3], [4, 5, 6]])
-    
-    # Binary save/load
-    with tempfile.NamedTemporaryFile(suffix='.apy', delete=False) as f:
-        temp_file = f.name
-    
-    arrpy.save(temp_file, data)
-    loaded = arrpy.load(temp_file)
-    print(f"Binary save/load: {loaded._data}")
-    
-    # Text save/load
-    with tempfile.NamedTemporaryFile(suffix='.txt', delete=False) as f:
-        text_file = f.name
-    
-    arrpy.savetxt(text_file, data, delimiter=',')
-    loaded_text = arrpy.loadtxt(text_file, delimiter=',')
-    print(f"Text save/load: shape={loaded_text.shape}")
-    
-    # Compressed archives
-    with tempfile.NamedTemporaryFile(suffix='.apz', delete=False) as f:
-        archive_file = f.name
-    
-    arrpy.savez(archive_file, array1=data, array2=data*2)
-    archives = arrpy.loadz(archive_file)
-    print(f"Archive contains: {list(archives.keys())}")
-    
-    # Cleanup
-    import os
-    os.unlink(temp_file)
-    os.unlink(text_file)
-    os.unlink(archive_file)
+    print("Note: I/O operations are not yet implemented in ArrPy v1.0.0")
+    print("")
+    print("Planned features:")
+    print("  • Binary save/load (arrpy.save, arrpy.load)")
+    print("  • Text file I/O (arrpy.savetxt, arrpy.loadtxt)")
+    print("  • Compressed archives (arrpy.savez, arrpy.loadz)")
+    print("  • NumPy compatible file formats")
+    print("")
+    print("For now, you can use Python's pickle or numpy.save/load")
 
 
 def showcase_sorting():
@@ -326,11 +278,11 @@ def main():
     showcase_array_creation()
     showcase_broadcasting()
     showcase_linear_algebra()
-    showcase_fft()
+    # showcase_fft() - removed (requires complex number support)
     showcase_statistics()
     showcase_indexing()
     showcase_sorting()
-    showcase_io()
+    # showcase_io()  # I/O operations not yet implemented
     showcase_performance()
     
     print("\n" + "="*60)

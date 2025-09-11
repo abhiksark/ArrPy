@@ -215,36 +215,6 @@ class BenchmarkSuite:
                 except Exception as e:
                     print(f"  {backend_name}: Not available")
     
-    def benchmark_fft(self):
-        """Benchmark FFT operations."""
-        print("\n" + "="*60)
-        print("FFT Operations")
-        print("="*60)
-        
-        print("\nNote: FFT operations are not supported as they require")
-        print("complex number support, which has been removed from ArrPy.")
-        print("Only DCT (Discrete Cosine Transform) is available.")
-        
-        for size in [128, 512, 2048]:  # Powers of 2 for FFT
-            print(f"\nSize: {size}")
-            print("-"*40)
-            
-            data = list(np.random.randn(size).flatten())
-            
-            set_backend('python')  # FFT only in Python backend
-            a = arrpy.array(data)
-            
-            print("\nPYTHON Backend:")
-            
-            # FFT - Skip as it's not supported
-            print(f"  FFT:  Not supported (requires complex numbers)")
-            
-            # DCT - Still works with real numbers
-            try:
-                time_dct = self.time_operation(lambda: arrpy.fft.dct(a), iterations=10)
-                print(f"  DCT:  {time_dct:8.3f} ms")
-            except Exception as e:
-                print(f"  DCT:  Error - {e}")
     
     def benchmark_sorting(self):
         """Benchmark sorting operations."""
@@ -294,7 +264,6 @@ Arithmetic:  Python 1x | Cython 5-15x  | C++ 50-100x
 Reductions:  Python 1x | Cython 8-20x  | C++ 30-80x
 Ufuncs:      Python 1x | Cython 2-5x   | C++ 10-30x
 Linear Alg:  Python 1x | Cython 10-50x | C++ 100-1000x
-FFT:         Python only (educational implementation)
 Sorting:     Python only (multiple algorithms)
 
 Memory Usage:
@@ -321,9 +290,8 @@ Recommendations:
         self.benchmark_reductions()
         self.benchmark_ufuncs()
         self.benchmark_linalg()
-        self.benchmark_fft()
         self.benchmark_sorting()
-        self.generate_summary()
+        # self.generate_summary()  # Removed verbose summary
         
         print("\n" + "="*60)
         print("Benchmark Complete!")

@@ -14,9 +14,11 @@ def _matmul_c(data1, data2, shape1, shape2):
         )
         return result, shape
     except ImportError:
-        # Fall back to Python implementation
-        from ..python.linalg_ops import _matmul_python
-        return _matmul_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            "C++ backend not compiled. Run: make build-cpp\n"
+            "Available in: python, cython\n"
+            "Switch backends with: arrpy.set_backend('cython')"
+        )
 
 
 def _dot_c(data1, data2, shape1, shape2):
@@ -30,9 +32,11 @@ def _dot_c(data1, data2, shape1, shape2):
         )
         return result, shape
     except ImportError:
-        # Fall back to Python implementation
-        from ..python.linalg_ops import _dot_python
-        return _dot_python(data1, data2, shape1, shape2)
+        raise NotImplementedError(
+            "C++ backend not compiled. Run: make build-cpp\n"
+            "Available in: python, cython\n"
+            "Switch backends with: arrpy.set_backend('cython')"
+        )
 
 
 def _transpose_c(data, shape):
