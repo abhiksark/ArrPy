@@ -130,25 +130,25 @@ def register_fallback_operation(operation: str):
 def register_cython_operations():
     """Register all available Cython type-specific operations."""
     try:
-        from .backends.cython import typed_ops
+        from .backends.cython.experimental import typed_ops
         
         # Register float64 operations
-        _dispatcher.register('add', DTypeCodeCode.FLOAT64, typed_ops._add_float64)
-        _dispatcher.register('multiply', DTypeCodeCode.FLOAT64, typed_ops._multiply_float64)
-        _dispatcher.register('subtract', DTypeCodeCode.FLOAT64, typed_ops._subtract_float64)
-        _dispatcher.register('divide', DTypeCodeCode.FLOAT64, typed_ops._divide_float64)
+        _dispatcher.register('add', DTypeCode.FLOAT64, typed_ops._add_float64)
+        _dispatcher.register('multiply', DTypeCode.FLOAT64, typed_ops._multiply_float64)
+        _dispatcher.register('subtract', DTypeCode.FLOAT64, typed_ops._subtract_float64)
+        _dispatcher.register('divide', DTypeCode.FLOAT64, typed_ops._divide_float64)
         
         # Register float32 operations
-        _dispatcher.register('add', DTypeCodeCode.FLOAT32, typed_ops._add_float32)
+        _dispatcher.register('add', DTypeCode.FLOAT32, typed_ops._add_float32)
         
         # Register int64 operations
-        _dispatcher.register('add', DTypeCodeCode.INT64, typed_ops._add_int64)
+        _dispatcher.register('add', DTypeCode.INT64, typed_ops._add_int64)
         
         # Register int32 operations
-        _dispatcher.register('add', DTypeCodeCode.INT32, typed_ops._add_int32)
+        _dispatcher.register('add', DTypeCode.INT32, typed_ops._add_int32)
         
         # Register vectorized operations
-        _dispatcher.register('add_vectorized', DTypeCodeCode.FLOAT64, typed_ops._add_float64_vectorized)
+        _dispatcher.register('add_vectorized', DTypeCode.FLOAT64, typed_ops._add_float64_vectorized)
         
         return True
     except ImportError:
