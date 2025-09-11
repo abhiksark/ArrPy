@@ -1,0 +1,147 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop, v*.x ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11']
+        backend: [python, cython, c]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install system dependencies
+      if: matrix.backend == 'c' && matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++ build-essential
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    
+    - name: Install package
+      run: |
+        pip install -e .
+    
+    - name: Build Cython extensions
+      if: matrix.backend == 'cython'
+      run: |
+        python setup.py build_ext --inplace
+    
+    - name: Build C++ extensions
+      if: matrix.backend == 'c'
+      run: |
+        pip install pybind11
+        python setup_extensions/setup_buffer_cpp.py build_ext --inplace || true
+        python setup_extensions/setup_cpp.py build_ext --inplace || true
+    
+    - name: Run tests
+      env:
+        ARRPY_BACKEND: ${{ matrix.backend }}
+      run: |
+        pytest tests/ --ignore=tests/experimental -v --tb=short
+    
+    - name: Test imports
+      run: |
+        python -c "import arrpy; print(f'ArrPy version: {arrpy.__version__}')"
+        python -c "import arrpy; arrpy.set_backend('${{ matrix.backend }}'); a = arrpy.array([1,2,3]); print(f'Backend {arrpy.get_backend()} works: {a.sum()}')"
+
+  quick-test:
+    # Quick test for pull requests - just Python backend on one OS/version
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install minimal dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy pytest tabulate
+    
+    - name: Install package
+      run: |
+        pip install -e .
+    
+    - name: Run quick tests
+      run: |
+        ARRPY_BACKEND=python pytest tests/ --ignore=tests/experimental -q --tb=no
+    
+    - name: Check feature matrix
+      run: |
+        python check_features.py --backend python
+
+  benchmark:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+    
+    - name: Install package
+      run: |
+        pip install -e .
+    
+    - name: Build Cython extensions
+      run: |
+        python setup.py build_ext --inplace
+    
+    - name: Run benchmarks
+      run: |
+        python benchmarks/benchmark_v1.py --profile quick
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff
+    
+    - name: Run ruff
+      run: |
+        ruff check arrpy/ --select E,F,W --ignore E501,W503 || true
+        # Allow linting to fail for now

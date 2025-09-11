@@ -1,0 +1,12 @@
+# ArrPy Core Requirements
+# Pure Python implementation has minimal dependencies
+
+# Build dependencies
+numpy>=1.20.0    # Required for Cython extensions and comparisons
+cython>=0.29.0   # For building Cython extensions
+
+# Utility dependencies
+tabulate>=0.9.0  # For feature matrix display
+
+# Development dependencies (optional)
+# Install with: pip install -r requirements-dev.txt

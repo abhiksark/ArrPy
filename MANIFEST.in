@@ -1,0 +1,82 @@
+# Include documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+include AUTHORS
+include CONTRIBUTING.md
+include CLAUDE.md
+
+# Include requirements
+include requirements.txt
+include requirements-dev.txt
+
+# Include configuration files
+include pyproject.toml
+include setup.py
+include setup_cpp.py
+include Makefile
+include .gitignore
+
+# Include Cython files
+recursive-include arrpy *.pyx *.pxd
+
+# Include C++ files
+recursive-include arrpy *.cpp *.hpp *.h
+
+# Include test files
+recursive-include tests *.py
+
+# Include benchmark files
+recursive-include benchmarks *.py
+
+# Include examples
+recursive-include examples *.py
+
+# Include tutorials
+recursive-include tutorials *.py
+
+# Include documentation files
+recursive-include docs *.md *.rst *.txt
+
+# Include Docker files
+include Dockerfile
+include docker-compose.yml
+
+# Include CI/CD configuration
+recursive-include .github *.yml *.yaml
+
+# Exclude compiled files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.so
+global-exclude *.dylib
+global-exclude *.dll
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.swp
+global-exclude *~
+
+# Exclude build directories
+prune build
+prune dist
+prune *.egg-info
+prune .pytest_cache
+prune htmlcov
+prune .mypy_cache
+
+# Exclude IDE directories
+prune .vscode
+prune .idea
+
+# Exclude generated C files from Cython (we ship .pyx)
+recursive-exclude arrpy/backends/cython *.c
+
+# Include data files for tests
+recursive-include tests/data *
+
+# Include performance results
+include benchmarks/*.json
+include benchmarks/*.txt
+
+# Package metadata
+include PKG-INFO
