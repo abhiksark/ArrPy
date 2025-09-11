@@ -4,6 +4,14 @@ This directory contains utility and automation scripts for ArrPy development and
 
 ## Scripts
 
+### check_backends.py
+Checks which backends are available and properly compiled.
+
+**Usage:**
+```bash
+python scripts/check_backends.py  # Check all backend availability
+```
+
 ### check_features.py
 Generates a feature implementation matrix showing which operations are available in each backend (Python, Cython, C++).
 
@@ -40,6 +48,16 @@ Example script showing how to skip tests when certain backends aren't available.
 
 ### pytest_skip_config.py
 Configuration for pytest to handle backend-specific test skipping.
+
+### release.sh
+Automated release script for version bumping and tagging.
+
+**Usage:**
+```bash
+./scripts/release.sh patch  # Bump patch version (1.0.0 -> 1.0.1)
+./scripts/release.sh minor  # Bump minor version (1.0.0 -> 1.1.0)
+./scripts/release.sh major  # Bump major version (1.0.0 -> 2.0.0)
+```
 
 ## Integration
 
