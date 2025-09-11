@@ -66,13 +66,27 @@ banner-help: banner
 # Shorter help without banner
 help:
 	@echo "$(WHITE)ArrPy Commands:$(RESET)"
-	@echo "  install    - Install in production mode"
-	@echo "  dev        - Install in development mode"
-	@echo "  test       - Run all tests"
-	@echo "  bench      - Run benchmarks"
-	@echo "  clean      - Clean build artifacts"
-	@echo "  build      - Build all extensions"
-	@echo "  status     - Show backend status"
+	@echo "$(CYAN)Installation:$(RESET)"
+	@echo "  install         - Install in production mode"
+	@echo "  dev            - Install in development mode"
+	@echo ""
+	@echo "$(CYAN)Testing:$(RESET)"
+	@echo "  test           - Run all tests (unit + compatibility)"
+	@echo "  test-unit      - Run unit tests only"
+	@echo "  test-compat    - Test NumPy compatibility (all backends)"
+	@echo "  test-compat-quick - Quick test (Python backend only)"
+	@echo "  test-python    - Test Python backend"
+	@echo "  test-cython    - Test Cython backend"
+	@echo "  test-c         - Test C++ backend"
+	@echo ""
+	@echo "$(CYAN)Benchmarking:$(RESET)"
+	@echo "  bench          - Run comprehensive benchmarks"
+	@echo "  bench-compare  - Compare all backends"
+	@echo ""
+	@echo "$(CYAN)Building:$(RESET)"
+	@echo "  build          - Build all extensions"
+	@echo "  clean          - Clean build artifacts"
+	@echo "  status         - Show backend status"
 
 # Installation targets with banner
 install: banner
@@ -87,22 +101,48 @@ dev: banner
 	@echo "$(GREEN)✓ Development setup complete!$(RESET)"
 
 # Testing targets with banner
-test: banner
-	@echo "$(CYAN)Running all tests...$(RESET)"
-	pytest tests/ -v
-	@echo "$(GREEN)✓ Tests complete!$(RESET)"
+test: banner test-unit test-compat
+	@echo "$(GREEN)✓ All tests complete!$(RESET)"
 
+test-unit: 
+	@echo "$(CYAN)Running unit tests...$(RESET)"
+	pytest tests/ -v --ignore=tests/test_numpy_compat.py
+	@echo "$(GREEN)✓ Unit tests complete!$(RESET)"
+
+# NumPy compatibility testing
+test-compat: banner
+	@echo "$(CYAN)Testing NumPy compatibility across all backends...$(RESET)"
+	pytest tests/test_numpy_compat.py -v
+	@echo "$(GREEN)✓ Compatibility tests complete!$(RESET)"
+
+test-compat-quick:
+	@echo "$(YELLOW)Quick compatibility test (Python backend only)...$(RESET)"
+	pytest tests/test_numpy_compat.py -v -k "python"
+
+test-compat-python:
+	@echo "$(YELLOW)Testing Python backend NumPy compatibility...$(RESET)"
+	ARRPY_BACKEND=python pytest tests/test_numpy_compat.py -v
+
+test-compat-cython:
+	@echo "$(YELLOW)Testing Cython backend NumPy compatibility...$(RESET)"
+	ARRPY_BACKEND=cython pytest tests/test_numpy_compat.py -v
+
+test-compat-c:
+	@echo "$(YELLOW)Testing C backend NumPy compatibility...$(RESET)"
+	ARRPY_BACKEND=c pytest tests/test_numpy_compat.py -v
+
+# Backend-specific tests
 test-python:
 	@echo "$(YELLOW)Testing Python backend...$(RESET)"
-	ARRPY_BACKEND=python pytest tests/ -v
+	ARRPY_BACKEND=python pytest tests/ -v --ignore=tests/test_numpy_compat.py
 
 test-cython:
 	@echo "$(YELLOW)Testing Cython backend...$(RESET)"
-	ARRPY_BACKEND=cython pytest tests/ -v
+	ARRPY_BACKEND=cython pytest tests/ -v --ignore=tests/test_numpy_compat.py
 
 test-c:
 	@echo "$(YELLOW)Testing C++ backend...$(RESET)"
-	ARRPY_BACKEND=c pytest tests/ -v
+	ARRPY_BACKEND=c pytest tests/ -v --ignore=tests/test_numpy_compat.py
 
 test-coverage: banner
 	@echo "$(CYAN)Running tests with coverage...$(RESET)"

@@ -413,6 +413,16 @@ class ArrPy:
         
         return self._create_from_data(result_data, result_shape)
     
+    def __matmul__(self, other):
+        """Matrix multiplication using @ operator."""
+        from . import matmul
+        return matmul(self, other)
+    
+    def __rmatmul__(self, other):
+        """Right matrix multiplication using @ operator."""
+        from . import matmul
+        return matmul(other, self)
+    
     # ============================================================
     # Comparison operators
     # ============================================================

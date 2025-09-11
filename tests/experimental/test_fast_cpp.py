@@ -13,7 +13,11 @@ from arrpy import Backend, set_backend
 
 # Import both implementations
 from arrpy.backends.c import array_ops as old_cpp
-from arrpy.backends.c import array_ops_fast as new_cpp
+try:
+    from arrpy.backends.c.experimental import array_ops_fast as new_cpp
+except ImportError:
+    import pytest
+    pytest.skip("Fast C++ backend not available", allow_module_level=True)
 
 def benchmark_operation(name, func, data1, data2, shape, iterations=100):
     """Benchmark a single operation."""

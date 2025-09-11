@@ -50,6 +50,13 @@ if USE_CYTHON:
             include_dirs=[np.get_include()],
             extra_compile_args=["-O3", "-ffast-math"],
         ),
+        # Experimental modules (only compile standalone modules)
+        Extension(
+            "arrpy.backends.cython.experimental.typed_ops",
+            ["arrpy/backends/cython/experimental/typed_ops.pyx"],
+            include_dirs=[np.get_include()],
+            extra_compile_args=["-O3", "-ffast-math"],
+        ),
     ]
     ext_modules = cythonize(
         extensions,
