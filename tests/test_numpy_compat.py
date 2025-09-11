@@ -15,12 +15,26 @@ import arrpy
 from arrpy import Backend, set_backend, get_backend
 
 
+def is_c_backend_available():
+    """Check if C++ backend is compiled and available."""
+    try:
+        # Try to import the C++ modules
+        from arrpy.backends.c import linalg_ops_cpp
+        return True
+    except ImportError:
+        return False
+
+
 class TestNumpyCompatibility:
     """Test ArrPy operations match NumPy across all backends."""
     
     @pytest.fixture(params=['python', 'cython', 'c'])
     def backend(self, request):
         """Parametrize tests to run on all available backends."""
+        # Skip C backend tests if C++ extensions not compiled
+        if request.param == 'c' and not is_c_backend_available():
+            pytest.skip("C++ backend not compiled")
+        
         original_backend = get_backend()
         try:
             set_backend(request.param)
