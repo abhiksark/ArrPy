@@ -38,4 +38,4 @@ jobs:
     
     - name: Run CI tests
       run: |
-        python run_ci_tests.py
+        python scripts/run_ci_tests.py

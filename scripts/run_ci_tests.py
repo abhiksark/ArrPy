@@ -58,7 +58,7 @@ def main():
     
     # Test 5: Feature matrix generation
     all_passed &= run_command(
-        "python check_features.py --backend python --json > /dev/null && echo 'Feature matrix works'",
+        "python scripts/check_features.py --backend python --json > /dev/null && echo 'Feature matrix works'",
         "Feature Matrix Test"
     )
     

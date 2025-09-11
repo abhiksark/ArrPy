@@ -318,7 +318,7 @@ demo: banner
 experimental: banner
 	@echo "$(MAGENTA)🧪 Running Experimental Features Demo$(RESET)"
 	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
-	@$(PYTHON) run_experimental.py
+	@$(PYTHON) scripts/run_experimental.py
 	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
 	@echo "$(GREEN)✓ Experimental demo complete!$(RESET)"
 
@@ -350,19 +350,19 @@ exp-quick:
 features: banner
 	@echo "$(MAGENTA)Generating Feature Implementation Matrix$(RESET)"
 	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
-	@$(PYTHON) check_features.py
+	@$(PYTHON) scripts/check_features.py
 	@echo ""
 	@echo "$(GREEN)✓ Feature matrix generated!$(RESET)"
 
 features-detailed: banner
 	@echo "$(MAGENTA)Generating Detailed Feature Matrix$(RESET)"
 	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
-	@$(PYTHON) check_features.py --detailed
+	@$(PYTHON) scripts/check_features.py --detailed
 	@echo ""
 	@echo "$(GREEN)✓ Detailed matrix generated!$(RESET)"
 
 features-json:
-	@$(PYTHON) check_features.py --json
+	@$(PYTHON) scripts/check_features.py --json
 
 # Development workflow
 workflow: banner

@@ -93,7 +93,7 @@ jobs:
     
     - name: Check feature matrix
       run: |
-        python check_features.py --backend python
+        python scripts/check_features.py --backend python
 
   benchmark:
     runs-on: ubuntu-latest
