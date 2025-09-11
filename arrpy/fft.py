@@ -1,5 +1,8 @@
 """
 Fast Fourier Transform operations for ArrPy.
+
+Note: FFT operations are not supported as they require complex number support,
+which has been removed from ArrPy to focus on core numeric computing with real numbers only.
 """
 
 from .backend_selector import get_backend, Backend
@@ -20,25 +23,10 @@ def fft(a):
     ArrPy
         Complex array containing FFT
     """
-    backend = get_backend()
-    
-    if backend == Backend.PYTHON:
-        from .backends.python.fft_ops import _fft_python
-        result_data, shape = _fft_python(a._data, a._shape)
-    else:
-        from .backends.python.fft_ops import _fft_python
-        result_data, shape = _fft_python(a._data, a._shape)
-    
-    from .dtype import complex128
-    
-    result = ArrPy.__new__(ArrPy)
-    result._data = result_data
-    result._shape = shape
-    result._size = len(result_data)
-    result._dtype = complex128
-    result._strides = result._calculate_strides(shape)
-    
-    return result
+    raise NotImplementedError(
+        "FFT operations require complex number support, which has been removed from ArrPy.\n"
+        "FFT inherently produces complex-valued results and cannot be implemented with only real numbers."
+    )
 
 
 def ifft(a):
@@ -55,25 +43,10 @@ def ifft(a):
     ArrPy
         Complex array containing inverse FFT
     """
-    backend = get_backend()
-    
-    if backend == Backend.PYTHON:
-        from .backends.python.fft_ops import _ifft_python
-        result_data, shape = _ifft_python(a._data, a._shape)
-    else:
-        from .backends.python.fft_ops import _ifft_python
-        result_data, shape = _ifft_python(a._data, a._shape)
-    
-    from .dtype import complex128
-    
-    result = ArrPy.__new__(ArrPy)
-    result._data = result_data
-    result._shape = shape
-    result._size = len(result_data)
-    result._dtype = complex128
-    result._strides = result._calculate_strides(shape)
-    
-    return result
+    raise NotImplementedError(
+        "FFT operations require complex number support, which has been removed from ArrPy.\n"
+        "FFT inherently produces complex-valued results and cannot be implemented with only real numbers."
+    )
 
 
 def fft2(a):
@@ -90,28 +63,10 @@ def fft2(a):
     ArrPy
         Complex array containing 2D FFT
     """
-    if a.ndim != 2:
-        raise ValueError("fft2 requires 2D input")
-    
-    backend = get_backend()
-    
-    if backend == Backend.PYTHON:
-        from .backends.python.fft_ops import _fft2_python
-        result_data, shape = _fft2_python(a._data, a._shape)
-    else:
-        from .backends.python.fft_ops import _fft2_python
-        result_data, shape = _fft2_python(a._data, a._shape)
-    
-    from .dtype import complex128
-    
-    result = ArrPy.__new__(ArrPy)
-    result._data = result_data
-    result._shape = shape
-    result._size = len(result_data)
-    result._dtype = complex128
-    result._strides = result._calculate_strides(shape)
-    
-    return result
+    raise NotImplementedError(
+        "FFT operations require complex number support, which has been removed from ArrPy.\n"
+        "FFT inherently produces complex-valued results and cannot be implemented with only real numbers."
+    )
 
 
 def rfft(a):
@@ -128,25 +83,10 @@ def rfft(a):
     ArrPy
         Complex array of positive frequency terms
     """
-    backend = get_backend()
-    
-    if backend == Backend.PYTHON:
-        from .backends.python.fft_ops import _rfft_python
-        result_data, shape = _rfft_python(a._data, a._shape)
-    else:
-        from .backends.python.fft_ops import _rfft_python
-        result_data, shape = _rfft_python(a._data, a._shape)
-    
-    from .dtype import complex128
-    
-    result = ArrPy.__new__(ArrPy)
-    result._data = result_data
-    result._shape = shape
-    result._size = len(result_data)
-    result._dtype = complex128
-    result._strides = result._calculate_strides(shape)
-    
-    return result
+    raise NotImplementedError(
+        "FFT operations require complex number support, which has been removed from ArrPy.\n"
+        "FFT inherently produces complex-valued results and cannot be implemented with only real numbers."
+    )
 
 
 def fftfreq(n, d=1.0):
@@ -223,6 +163,9 @@ def convolve(a, v, mode='full'):
     """
     Convolve two arrays using FFT.
     
+    Note: This implementation uses FFT internally which requires complex numbers.
+    Since complex support has been removed, this function is not available.
+    
     Parameters
     ----------
     a : ArrPy
@@ -237,27 +180,10 @@ def convolve(a, v, mode='full'):
     ArrPy
         Convolution result
     """
-    backend = get_backend()
-    
-    if backend == Backend.PYTHON:
-        from .backends.python.fft_ops import _convolve_fft_python
-        result_data, shape = _convolve_fft_python(
-            a._data, a._shape, v._data, v._shape, mode
-        )
-    else:
-        from .backends.python.fft_ops import _convolve_fft_python
-        result_data, shape = _convolve_fft_python(
-            a._data, a._shape, v._data, v._shape, mode
-        )
-    
-    result = ArrPy.__new__(ArrPy)
-    result._data = result_data
-    result._shape = shape
-    result._size = len(result_data)
-    result._dtype = a._dtype
-    result._strides = result._calculate_strides(shape)
-    
-    return result
+    raise NotImplementedError(
+        "Convolution via FFT requires complex number support, which has been removed from ArrPy.\n"
+        "Consider implementing direct convolution without FFT for real-valued arrays."
+    )
 
 
 def dct(a, type=2):

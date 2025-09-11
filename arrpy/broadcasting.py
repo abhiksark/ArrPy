@@ -111,6 +111,106 @@ def broadcast_arrays(*arrays):
     return broadcasted
 
 
+def broadcast_data(data, old_shape, new_shape):
+    """
+    Broadcast data from old_shape to new_shape.
+    
+    Parameters
+    ----------
+    data : list or array.array
+        Flattened array data
+    old_shape : tuple
+        Current shape of the data
+    new_shape : tuple
+        Target shape after broadcasting
+    
+    Returns
+    -------
+    list or array.array
+        Broadcasted data
+    """
+    import array as arr
+    
+    # Handle scalar case
+    if old_shape == ():
+        # Scalar - replicate to fill shape
+        size = 1
+        for dim in new_shape:
+            size *= dim
+        
+        if isinstance(data, arr.array):
+            result = arr.array(data.typecode)
+            for _ in range(size):
+                result.append(data[0])
+            return result
+        else:
+            return data * size
+    
+    # Check if already correct shape
+    if old_shape == new_shape:
+        return data
+    
+    # Pad old shape with 1s on left
+    ndim_diff = len(new_shape) - len(old_shape)
+    padded_shape = (1,) * ndim_diff + old_shape
+    
+    # Check compatibility
+    for old_dim, new_dim in zip(padded_shape, new_shape):
+        if old_dim != new_dim and old_dim != 1:
+            raise ValueError(f"Cannot broadcast shape {old_shape} to {new_shape}")
+    
+    # Calculate strides for old shape
+    old_strides = []
+    stride = 1
+    for dim in reversed(old_shape):
+        old_strides.append(stride)
+        stride *= dim
+    old_strides = list(reversed(old_strides))
+    
+    # Pad strides with 0s for new dimensions
+    padded_strides = [0] * ndim_diff + old_strides
+    
+    # Adjust strides for broadcasting (dimensions of size 1 get stride 0)
+    broadcast_strides = []
+    for old_dim, old_stride, new_dim in zip(padded_shape, padded_strides, new_shape):
+        if old_dim == 1 and new_dim != 1:
+            broadcast_strides.append(0)
+        else:
+            broadcast_strides.append(old_stride)
+    
+    # Generate broadcasted data
+    total_size = 1
+    for dim in new_shape:
+        total_size *= dim
+    
+    if isinstance(data, arr.array):
+        result = arr.array(data.typecode)
+    else:
+        result = []
+    
+    for i in range(total_size):
+        # Convert flat index to multi-dimensional index
+        multi_idx = []
+        remainder = i
+        for dim in reversed(new_shape):
+            multi_idx.append(remainder % dim)
+            remainder //= dim
+        multi_idx = list(reversed(multi_idx))
+        
+        # Map to old array index using broadcast strides
+        old_flat_idx = 0
+        for j, (idx, stride) in enumerate(zip(multi_idx, broadcast_strides)):
+            if stride != 0:
+                old_flat_idx += idx * stride
+        
+        if isinstance(data, arr.array):
+            result.append(data[old_flat_idx])
+        else:
+            result.append(data[old_flat_idx])
+    
+    return result
+
+
 def _broadcast_to(array, shape):
     """
     Broadcast array to given shape.

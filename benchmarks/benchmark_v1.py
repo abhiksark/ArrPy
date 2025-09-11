@@ -221,6 +221,10 @@ class BenchmarkSuite:
         print("FFT Operations")
         print("="*60)
         
+        print("\nNote: FFT operations are not supported as they require")
+        print("complex number support, which has been removed from ArrPy.")
+        print("Only DCT (Discrete Cosine Transform) is available.")
+        
         for size in [128, 512, 2048]:  # Powers of 2 for FFT
             print(f"\nSize: {size}")
             print("-"*40)
@@ -232,13 +236,15 @@ class BenchmarkSuite:
             
             print("\nPYTHON Backend:")
             
-            # FFT
-            time_fft = self.time_operation(lambda: arrpy.fft_func(a), iterations=10)
-            print(f"  FFT:  {time_fft:8.3f} ms")
+            # FFT - Skip as it's not supported
+            print(f"  FFT:  Not supported (requires complex numbers)")
             
-            # DCT
-            time_dct = self.time_operation(lambda: arrpy.dct(a), iterations=10)
-            print(f"  DCT:  {time_dct:8.3f} ms")
+            # DCT - Still works with real numbers
+            try:
+                time_dct = self.time_operation(lambda: arrpy.fft.dct(a), iterations=10)
+                print(f"  DCT:  {time_dct:8.3f} ms")
+            except Exception as e:
+                print(f"  DCT:  Error - {e}")
     
     def benchmark_sorting(self):
         """Benchmark sorting operations."""

@@ -26,17 +26,16 @@ from .creation import (
 # Data types
 from .dtype import (
     int32, int64, float32, float64, bool_,
-    complex64, complex128,
     DType, infer_dtype
 )
 
 # Universal functions
 from . import ufuncs
 from .ufuncs import (
-    sin, cos, tan, exp, log, log10, sqrt, square, absolute,
+    sin, cos, tan, exp, log, log10, sqrt, square, absolute, abs,
     add, subtract, multiply, divide, power, mod,
     equal, not_equal, less, less_equal, greater, greater_equal,
-    sum, mean, min, max, prod
+    sum, mean, min, max, prod, argmin, argmax
 )
 
 # Linear algebra
@@ -65,13 +64,8 @@ from .indexing import (
 
 # Statistics
 from .statistics import (
-    clip, percentile, median, std, var, histogram,
+    clip, percentile, median, std, var,
     cumsum, cumprod, diff, gradient
-)
-
-# I/O operations
-from .io import (
-    save, load, savetxt, loadtxt, savez, loadz
 )
 
 # Random number generation
@@ -103,15 +97,14 @@ __all__ = [
     'zeros', 'ones', 'arange', 'linspace', 'array', 'full', 'empty', 'eye',
     # Data types
     'int32', 'int64', 'float32', 'float64', 'bool_',
-    'complex64', 'complex128',
     'DType', 'infer_dtype',
     # Modules
     'ufuncs', 'linalg', 'random', 'fft',
     # Ufuncs
-    'sin', 'cos', 'tan', 'exp', 'log', 'log10', 'sqrt', 'square', 'absolute',
+    'sin', 'cos', 'tan', 'exp', 'log', 'log10', 'sqrt', 'square', 'absolute', 'abs',
     'add', 'subtract', 'multiply', 'divide', 'power', 'mod',
     'equal', 'not_equal', 'less', 'less_equal', 'greater', 'greater_equal',
-    'sum', 'mean', 'min', 'max', 'prod',
+    'sum', 'mean', 'min', 'max', 'prod', 'argmin', 'argmax',
     # Linear algebra
     'dot', 'matmul', 'transpose', 'inner', 'outer', 'trace',
     'solve', 'inv', 'det', 'eig', 'svd', 'qr', 'cholesky', 'matrix_rank',
@@ -123,10 +116,8 @@ __all__ = [
     # Advanced indexing
     'where', 'fancy_index', 'boolean_index',
     # Statistics
-    'clip', 'percentile', 'median', 'std', 'var', 'histogram',
+    'clip', 'percentile', 'median', 'std', 'var',
     'cumsum', 'cumprod', 'diff', 'gradient',
-    # I/O operations
-    'save', 'load', 'savetxt', 'loadtxt', 'savez', 'loadz',
     # Array manipulation
     'reshape', 'flatten', 'concatenate', 'stack', 'split',
     'squeeze', 'expand_dims',

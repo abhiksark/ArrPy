@@ -169,7 +169,11 @@ def negative(x):
 
 def absolute(x):
     """Element-wise absolute value."""
-    return _apply_unary_ufunc(x, abs)
+    return _apply_unary_ufunc(x, lambda a: a if a >= 0 else -a)
+
+
+# Create abs as an alias for absolute
+abs = absolute
 
 
 # Comparison operations
@@ -376,29 +380,6 @@ def square(x):
     return _apply_unary_ufunc(x, lambda a: a * a)
 
 
-def absolute(x):
-    """Element-wise absolute value."""
-    from .backend_selector import get_backend, Backend
-    from .dtype import float64
-    from .arrpy_backend import ArrPy
-    
-    backend = get_backend()
-    
-    if backend == Backend.CYTHON:
-        from .backends.cython.ufuncs_ops import _absolute_cython
-        result_data, shape = _absolute_cython(x._data, x._shape)
-        
-        result = ArrPy.__new__(ArrPy)
-        result._data = result_data
-        result._shape = shape
-        result._size = x._size
-        result._dtype = x._dtype
-        result._strides = x._strides
-        return result
-    else:
-        return _apply_unary_ufunc(x, abs)
-
-
 # Reduction operations
 def sum(a, axis=None, keepdims=False):
     """
@@ -533,6 +514,44 @@ def max(a, axis=None, keepdims=False):
     
     # TODO: Implement axis-specific reduction
     raise NotImplementedError("Axis-specific max not yet implemented")
+
+
+def argmin(a, axis=None):
+    """
+    Return indices of minimum values along an axis.
+    
+    Parameters
+    ----------
+    a : arrpy
+        Input array
+    axis : None or int, optional
+        Axis along which to find minimum indices
+    
+    Returns
+    -------
+    int or arrpy
+        Index of minimum value (if axis=None) or array of indices
+    """
+    return a.argmin(axis=axis)
+
+
+def argmax(a, axis=None):
+    """
+    Return indices of maximum values along an axis.
+    
+    Parameters
+    ----------
+    a : arrpy
+        Input array
+    axis : None or int, optional
+        Axis along which to find maximum indices
+    
+    Returns
+    -------
+    int or arrpy
+        Index of maximum value (if axis=None) or array of indices
+    """
+    return a.argmax(axis=axis)
 
 
 def prod(a, axis=None, keepdims=False):

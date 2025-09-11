@@ -548,6 +548,12 @@ class ArrPy:
                 # For multi-dimensional arrays, integer index selects a sub-array
                 raise NotImplementedError("Integer indexing for multi-dimensional arrays not yet implemented")
         
+        # Handle list/tuple of indices (fancy indexing) - check this before multi-dimensional indexing
+        if isinstance(key, (list, tuple)) and key and all(isinstance(i, int) for i in key):
+            from .indexing import fancy_index
+            from .creation import array
+            return fancy_index(self, array(key))
+        
         # Handle tuple of indices for multi-dimensional arrays
         if isinstance(key, tuple):
             if self.ndim == 1:
@@ -582,11 +588,8 @@ class ArrPy:
             if self.ndim != 1:
                 raise NotImplementedError("Slicing for multi-dimensional arrays not yet implemented")
             
-            # Get slice indices
-            start, stop, step = key.indices(self._size)
-            
-            # Extract sliced data
-            sliced_data = self._data[start:stop:step]
+            # Extract sliced data - pass slice directly to handle negative steps correctly
+            sliced_data = self._data[key]
             
             # Create new array with sliced data
             from .creation import array
@@ -603,11 +606,6 @@ class ArrPy:
                 from .indexing import fancy_index
                 return fancy_index(self, key)
         
-        # Handle list of indices (fancy indexing)
-        if isinstance(key, (list, tuple)) and all(isinstance(i, int) for i in key):
-            from .indexing import fancy_index
-            from .creation import array
-            return fancy_index(self, array(key))
         
         raise TypeError(f"Invalid index type: {type(key)}")
     
@@ -798,6 +796,34 @@ class ArrPy:
             return result_data[0]
         return self._create_from_data(result_data, result_shape)
     
+    def argmin(self, axis=None):
+        """Return indices of minimum values along an axis."""
+        if axis is not None:
+            raise NotImplementedError("axis parameter not yet supported for argmin")
+        
+        # For 1D or flattened array, find index of minimum
+        min_val = float('inf')
+        min_idx = 0
+        for i, val in enumerate(self._data):
+            if val < min_val:
+                min_val = val
+                min_idx = i
+        return min_idx
+    
+    def argmax(self, axis=None):
+        """Return indices of maximum values along an axis."""
+        if axis is not None:
+            raise NotImplementedError("axis parameter not yet supported for argmax")
+        
+        # For 1D or flattened array, find index of maximum
+        max_val = float('-inf')
+        max_idx = 0
+        for i, val in enumerate(self._data):
+            if val > max_val:
+                max_val = val
+                max_idx = i
+        return max_idx
+    
     # ============================================================
     # Shape manipulation (doesn't need backend)
     # ============================================================
@@ -840,7 +866,12 @@ class ArrPy:
         
         # Create reshaped array
         result = ArrPy.__new__(ArrPy)
-        result._data = self._data.copy()
+        # Properly copy array.array
+        import array
+        if isinstance(self._data, array.array):
+            result._data = array.array(self._data.typecode, self._data)
+        else:
+            result._data = list(self._data)
         result._shape = new_shape
         result._size = self._size
         result._dtype = self._dtype
