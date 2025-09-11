@@ -39,7 +39,7 @@ class Benchmark:
         """
         self.name = name
         # Use reasonable sizes to avoid timeouts
-        self.sizes = sizes or [100, 500, 1000]
+        self.sizes = sizes or [100, 500]
         self.results = {}
         
     def run(self, operation, backends=None, warmup=5, iterations=10):

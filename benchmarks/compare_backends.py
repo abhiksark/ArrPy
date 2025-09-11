@@ -39,7 +39,7 @@ def benchmark_basic_ops(sizes=None):
 
 def benchmark_linalg(sizes=None):
     """Benchmark linear algebra operations."""
-    sizes = sizes or [(10, 10), (100, 100), (500, 500)]
+    sizes = sizes or [(10, 10), (50, 50), (100, 100)]
     suite = BenchmarkSuite("Linear Algebra")
     
     # Matrix multiplication
@@ -48,7 +48,7 @@ def benchmark_linalg(sizes=None):
     suite.add(bench)
     
     # Dot product
-    bench = Benchmark("Dot Product", sizes=[100, 500, 1000])
+    bench = Benchmark("Dot Product", sizes=[100, 500])
     bench.run(lambda a, b: arrpy.linalg.dot(a, b))
     suite.add(bench)
     

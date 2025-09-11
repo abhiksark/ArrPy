@@ -64,7 +64,9 @@ matmul_blocked(const std::vector<double>& data1,
     
     // Blocked matrix multiplication for cache efficiency
     // Use OpenMP to parallelize outer loop
+    #ifdef _OPENMP
     #pragma omp parallel for schedule(dynamic, 1) if(m * p > 10000)
+    #endif
     for (size_t ii = 0; ii < m; ii += BLOCK_SIZE) {
         for (size_t jj = 0; jj < p; jj += BLOCK_SIZE) {
             for (size_t kk = 0; kk < n; kk += BLOCK_SIZE) {

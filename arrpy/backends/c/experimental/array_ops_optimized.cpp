@@ -70,9 +70,7 @@ void add_optimized(uintptr_t ptr1, uintptr_t ptr2, uintptr_t ptr_result, size_t 
     if (size >= PARALLEL_THRESHOLD) {
         // Parallel execution for large arrays
         #if USE_OPENMP
-        #if USE_OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif num_threads(omp_get_max_threads())
+        #pragma omp parallel for schedule(static) num_threads(omp_get_max_threads())
         #endif
         for (size_t i = 0; i < size; i += 16) {
             // Prefetch next cache lines
