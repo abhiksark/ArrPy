@@ -107,12 +107,12 @@ def _multiply_c(data1, data2, shape1, shape2):
         
         # Fallback
         raise NotImplementedError(
-            f"C++ backend encountered error: {e}\n"
+            "C++ backend encountered error\n"
             "Available in: python, cython\n"
             "Switch backends with: arrpy.set_backend('cython')"
         )
         
-    except Exception:
+    except Exception as e:
         raise NotImplementedError(
             f"C++ backend encountered error: {e}\n"
             "Available in: python, cython\n"

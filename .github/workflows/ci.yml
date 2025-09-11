@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ['3.9', '3.10', '3.11']
-        backend: [python, cython]
+        backend: [python, cython, c]
 
     steps:
     - uses: actions/checkout@v3
@@ -25,6 +25,12 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+    
+    - name: Install system dependencies
+      if: matrix.backend == 'c' && matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++ build-essential
     
     - name: Install dependencies
       run: |
@@ -40,6 +46,13 @@ jobs:
       if: matrix.backend == 'cython'
       run: |
         python setup.py build_ext --inplace
+    
+    - name: Build C++ extensions
+      if: matrix.backend == 'c'
+      run: |
+        pip install pybind11
+        python setup_extensions/setup_buffer_cpp.py build_ext --inplace || true
+        python setup_extensions/setup_cpp.py build_ext --inplace || true
     
     - name: Run tests
       env:
