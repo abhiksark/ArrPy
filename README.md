@@ -4,8 +4,8 @@
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Backend: 3](https://img.shields.io/badge/backends-3-green.svg)](https://github.com/yourusername/arrpy)
-[![Coverage: 95%](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/yourusername/arrpy)
+[![Backend: 3](https://img.shields.io/badge/backends-3-green.svg)](https://github.com/abhiksark/arrpy)
+[![Coverage: 95%](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/abhiksark/arrpy)
 
 ## 🎯 What is ArrPy?
 
@@ -44,25 +44,28 @@ c = arrpy.matmul(a, b)  # Works with any backend!
 - **Extensive documentation** - learn from the code
 - **Benchmarking suite** - measure every improvement
 
-### Production-Ready Performance
-- **Up to 1000x faster** than pure Python
-- **SIMD vectorization** (AVX2, NEON)
-- **Cache optimization** with blocking
-- **Memory pooling** for reduced allocations
-- **OpenMP parallelization**
+### Educational Performance Features
+- **Up to 100x faster** than pure Python (for optimized operations)
+- **SIMD vectorization** (AVX2, NEON) in C++ backend
+- **Memory views** and static typing in Cython
+- **Buffer protocol** for zero-copy operations
+- **Parallel reductions** in Cython backend
 
 ## 📦 Installation
 
 ### Quick Start
 
 ```bash
-pip install arrpy
+# Clone and install in development mode
+git clone https://github.com/abhiksark/arrpy.git
+cd arrpy
+pip install -e .
 ```
 
 ### Development Setup
 
 ```bash
-git clone https://github.com/yourusername/arrpy.git
+git clone https://github.com/abhiksark/arrpy.git
 cd arrpy
 make dev  # Installs in development mode with all dependencies
 ```
@@ -73,8 +76,8 @@ make dev  # Installs in development mode with all dependencies
 # Build Cython extensions
 python setup.py build_ext --inplace
 
-# Build C++ extensions (Linux only)
-python setup_cpp.py build_ext --inplace
+# Build C++ extensions
+make build-cpp
 ```
 
 ### Docker
@@ -115,12 +118,12 @@ d = arrpy.matmul(a, a.T)     # Same code, faster execution!
 
 | Operation | Python | Cython | C++ | vs NumPy |
 |-----------|--------|--------|-----|----------|
-| Addition (1M elements) | 245ms | 19ms | - | ~10x slower |
-| Matrix Multiply (500×500) | 1824ms | 156ms | 8.3ms* | ~100x slower |
+| Addition (1M elements) | 245ms | 19ms | 0.7ms | ~2-10x slower |
+| Matrix Multiply (500×500) | 1824ms | 156ms | 8.3ms | ~2-100x slower |
 | Sum (1M elements) | 187ms | 12ms | - | ~20x slower |
 | Fancy Indexing | 15ms | - | - | ~5x slower |
 
-*C++ backend only implements matmul currently
+*C++ backend implements arithmetic operations (add, subtract, multiply, divide) and matmul with SIMD
 
 ## 🎓 Learning Path
 
@@ -149,9 +152,8 @@ arrpy.set_backend('c')
 - [Complete Showcase](examples/showcase.py) - See all features in action
 
 ### Guides
-- [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) - Complete project summary
-- [PERFORMANCE_ANALYSIS.md](PERFORMANCE_ANALYSIS.md) - Detailed benchmarks
 - [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+- [CLAUDE.md](CLAUDE.md) - Development guide with Claude Code
 
 ## 🛠️ Development
 
@@ -223,7 +225,7 @@ MIT License - see [LICENSE](LICENSE) file.
 - ✅ **v1.0.0 Released** - Educational implementation complete!
 - ✅ Python backend: ~95% NumPy API coverage
 - ✅ Cython backend: Key operations optimized (add, multiply, matmul, sum, sqrt)
-- ✅ C++ backend: Critical path (matmul) implemented
+- ✅ C++ backend: Arithmetic operations and matmul with SIMD
 - ✅ Test suite: 180 tests passing, 31 skipped (unimplemented features)
 - ✅ Documentation: Comprehensive with educational focus
 
@@ -235,10 +237,7 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/yourusername/arrpy)
-- [Documentation](https://arrpy.readthedocs.io)
-- [PyPI Package](https://pypi.org/project/arrpy)
-- [Issue Tracker](https://github.com/yourusername/arrpy/issues)
+- [GitHub Repository](https://github.com/abhiksark/arrpy)
 
 ---
 
