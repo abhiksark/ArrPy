@@ -3,7 +3,7 @@ name: Tests
 
 on:
   push:
-    branches: [ main, develop, dev*, v*.x ]
+    branches: [ '**' ]  # Trigger on all branches
   pull_request:
     branches: [ main ]
 
