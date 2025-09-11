@@ -63,8 +63,8 @@ from .statistics import (
     cumsum, cumprod, diff, gradient
 )
 
-# Random number generation
-from . import random
+# Random number generation - removed (not implemented)
+# from . import random
 
 # Array manipulation
 from .manipulation import (
@@ -94,7 +94,7 @@ __all__ = [
     'int32', 'int64', 'float32', 'float64', 'bool_',
     'DType', 'infer_dtype',
     # Modules
-    'ufuncs', 'linalg', 'random',
+    'ufuncs', 'linalg',
     # Ufuncs
     'sin', 'cos', 'tan', 'exp', 'log', 'log10', 'sqrt', 'square', 'absolute', 'abs',
     'add', 'subtract', 'multiply', 'divide', 'power', 'mod',

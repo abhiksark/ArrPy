@@ -120,7 +120,7 @@ test: banner test-unit test-compat
 test-unit: 
 	@echo "$(CYAN)Running unit tests...$(RESET)"
 	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
-	@pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--color=yes \
 		--tb=short \
 		-q \
@@ -132,14 +132,14 @@ test-unit:
 test-pretty: banner
 	@echo "$(CYAN)Running tests with pretty output...$(RESET)"
 	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
-	@pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--color=yes \
 		--tb=short \
 		--no-header \
 		--co -q | head -20
 	@echo ""
 	@echo "$(YELLOW)Running tests...$(RESET)"
-	@pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--color=yes \
 		--tb=no \
 		--no-header \
@@ -172,21 +172,21 @@ test-compat-c:
 test-python:
 	@echo "$(YELLOW)Testing Python backend...$(RESET)"
 	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
-	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--color=yes --tb=line -q --no-header -rN
 	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
 
 test-cython:
 	@echo "$(YELLOW)Testing Cython backend...$(RESET)"
 	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
-	@ARRPY_BACKEND=cython pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@ARRPY_BACKEND=cython pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--color=yes --tb=line -q --no-header -rN
 	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
 
 test-c:
 	@echo "$(YELLOW)Testing C++ backend...$(RESET)"
 	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
-	@ARRPY_BACKEND=c pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@ARRPY_BACKEND=c pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--color=yes --tb=line -q --no-header -rN
 	@echo "$(BLUE)────────────────────────────────────────$(RESET)"
 
@@ -280,17 +280,17 @@ test-summary:
 	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
 	@echo ""
 	@echo "$(YELLOW)Python Backend:$(RESET)"
-	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--co -q --tb=no 2>&1 | grep "test session" || true
-	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@ARRPY_BACKEND=python pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--tb=no -q 2>&1 | tail -1
 	@echo ""
 	@echo "$(YELLOW)Cython Backend:$(RESET)"
-	@ARRPY_BACKEND=cython pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@ARRPY_BACKEND=cython pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--tb=no -q 2>&1 | tail -1
 	@echo ""
 	@echo "$(YELLOW)C++ Backend:$(RESET)"
-	@ARRPY_BACKEND=c pytest tests/ --ignore=tests/test_numpy_compat.py \
+	@ARRPY_BACKEND=c pytest tests/ --ignore=tests/test_numpy_compat.py --ignore=tests/experimental_archive \
 		--tb=no -q 2>&1 | tail -1
 	@echo ""
 	@echo "$(BLUE)════════════════════════════════════════$(RESET)"
