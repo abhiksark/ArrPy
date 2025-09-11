@@ -40,7 +40,8 @@ if USE_CYTHON:
             "arrpy.backends.cython.ufuncs_ops",
             ["arrpy/backends/cython/ufuncs_ops.pyx"],
             include_dirs=[np.get_include()],
-            extra_compile_args=["-O3", "-ffast-math"],
+            extra_compile_args=["-O3"],  # Removed -ffast-math to avoid vectorization issues
+            libraries=["m"],  # Link with math library
         ),
         # Experimental modules (only compile standalone modules)
         Extension(
