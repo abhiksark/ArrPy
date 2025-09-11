@@ -6,7 +6,6 @@ from .version import __version__
 
 # Main array class with backend support
 from .arrpy_backend import ArrPy
-from .arrpy_backend import ArrPy as arrpy  # Compatibility alias (lowercase)
 
 # Backend system
 from .backend_selector import (
