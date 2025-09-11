@@ -27,12 +27,6 @@ if USE_CYTHON:
             extra_compile_args=["-O3", "-ffast-math"],
         ),
         Extension(
-            "arrpy.backends.cython.array_ops_new",
-            ["arrpy/backends/cython/array_ops_new.pyx"],
-            include_dirs=[np.get_include()],
-            extra_compile_args=["-O3", "-ffast-math"],
-        ),
-        Extension(
             "arrpy.backends.cython.linalg_ops",
             ["arrpy/backends/cython/linalg_ops.pyx"],
             include_dirs=[np.get_include()],

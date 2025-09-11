@@ -1,58 +1,89 @@
 """
-Cython-optimized array operations.
-Uses type-specific implementations for maximum performance.
+Cython-optimized array operations using memoryviews.
+Works directly with array.array for zero-copy operations.
 """
 
 import cython
-from libc.stdlib cimport malloc, free
-from libc.string cimport memcpy
+import array
+from libc.math cimport sqrt, sin, cos, exp, log
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
 def _add_cython(data1, data2, shape1, shape2):
     """
-    Optimized addition without numpy overhead.
-    Uses raw C arrays for maximum performance.
+    Optimized addition using typed memoryviews.
+    Zero-copy operation on array.array objects.
     """
     cdef:
-        Py_ssize_t n = len(data1)
-        Py_ssize_t i
-        double* arr1
-        double* arr2
-        double* result_arr
-        list result_list = []
+        double[:] view1
+        double[:] view2
+        double[:] result_view
+        Py_ssize_t i, n
     
-    # Allocate C arrays
-    arr1 = <double*>malloc(n * sizeof(double))
-    arr2 = <double*>malloc(n * sizeof(double))
-    result_arr = <double*>malloc(n * sizeof(double))
+    # Python variable for result
+    result = None
     
-    if not arr1 or not arr2 or not result_arr:
-        if arr1: free(arr1)
-        if arr2: free(arr2)
-        if result_arr: free(result_arr)
-        raise MemoryError("Failed to allocate memory")
-    
-    try:
-        # Copy Python list to C arrays (optimized loop)
+    # Handle array.array with memoryviews
+    if isinstance(data1, array.array) and isinstance(data2, array.array):
+        # Get typed memoryviews (zero-copy)
+        view1 = data1
+        view2 = data2
+        n = len(data1)
+        
+        # Create result array
+        result = array.array('d', [0.0] * n)
+        result_view = result
+        
+        # Parallel addition with OpenMP if available
+        with nogil:
+            for i in range(n):
+                result_view[i] = view1[i] + view2[i]
+        
+        return result, shape1
+    else:
+        # Fallback for lists
+        n = len(data1)
+        result = []
         for i in range(n):
-            arr1[i] = <double>data1[i]
-            arr2[i] = <double>data2[i]
-        
-        # Perform vectorized addition
-        for i in range(n):
-            result_arr[i] = arr1[i] + arr2[i]
-        
-        # Copy result back to Python list
-        result_list = [result_arr[i] for i in range(n)]
-        
-        return result_list, shape1
+            result.append(data1[i] + data2[i])
+        return result, shape1
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+def _subtract_cython(data1, data2, shape1, shape2):
+    """
+    Optimized subtraction using typed memoryviews.
+    """
+    cdef:
+        double[:] view1
+        double[:] view2
+        double[:] result_view
+        Py_ssize_t i, n
     
-    finally:
-        free(arr1)
-        free(arr2)
-        free(result_arr)
+    result = None
+    
+    if isinstance(data1, array.array) and isinstance(data2, array.array):
+        view1 = data1
+        view2 = data2
+        n = len(data1)
+        
+        result = array.array('d', [0.0] * n)
+        result_view = result
+        
+        with nogil:
+            for i in range(n):
+                result_view[i] = view1[i] - view2[i]
+        
+        return result, shape1
+    else:
+        n = len(data1)
+        result = []
+        for i in range(n):
+            result.append(data1[i] - data2[i])
+        return result, shape1
 
 
 @cython.boundscheck(False)
@@ -61,123 +92,61 @@ def _add_cython(data1, data2, shape1, shape2):
 def _multiply_cython(data1, data2, shape1, shape2):
     """
     Optimized multiplication for both scalar and element-wise.
+    Handles array.array and scalar multiplication.
     """
     cdef:
-        Py_ssize_t n = len(data1)
-        Py_ssize_t i
-        double* arr1
-        double* arr2 = NULL
-        double* result_arr
+        double[:] view1
+        double[:] view2
+        double[:] result_view
+        Py_ssize_t i, n
         double scalar
-        list result_list = []
-        bint is_scalar = not isinstance(data2, list)
+        bint is_scalar
     
-    # Allocate arrays
-    arr1 = <double*>malloc(n * sizeof(double))
-    result_arr = <double*>malloc(n * sizeof(double))
+    result = None
     
-    if not is_scalar:
-        arr2 = <double*>malloc(n * sizeof(double))
-        if not arr2:
-            if arr1: free(arr1)
-            if result_arr: free(result_arr)
-            raise MemoryError("Failed to allocate memory")
+    # Check if data2 is a scalar
+    is_scalar = not isinstance(data2, (list, array.array))
     
-    if not arr1 or not result_arr:
-        if arr1: free(arr1)
-        if arr2: free(arr2)
-        if result_arr: free(result_arr)
-        raise MemoryError("Failed to allocate memory")
-    
-    try:
-        # Copy first array
-        for i in range(n):
-            arr1[i] = <double>data1[i]
+    if isinstance(data1, array.array):
+        view1 = data1
+        n = len(data1)
+        
+        result = array.array('d', [0.0] * n)
+        result_view = result
         
         if is_scalar:
             # Scalar multiplication
-            scalar = <double>data2
-            for i in range(n):
-                result_arr[i] = arr1[i] * scalar
+            scalar = <double>float(data2)
+            with nogil:
+                for i in range(n):
+                    result_view[i] = view1[i] * scalar
         else:
             # Element-wise multiplication
-            for i in range(n):
-                arr2[i] = <double>data2[i]
-            for i in range(n):
-                result_arr[i] = arr1[i] * arr2[i]
+            if isinstance(data2, array.array):
+                view2 = data2
+                with nogil:
+                    for i in range(n):
+                        result_view[i] = view1[i] * view2[i]
+            else:
+                # data2 is a list
+                for i in range(n):
+                    result_view[i] = view1[i] * data2[i]
         
-        # Copy result back
-        result_list = [result_arr[i] for i in range(n)]
-        
-        return result_list, shape1
-    
-    finally:
-        free(arr1)
-        if arr2: free(arr2)
-        free(result_arr)
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-def _subtract_cython(data1, data2, shape1, shape2):
-    """
-    Optimized subtraction without numpy overhead.
-    Uses raw C arrays for maximum performance.
-    """
-    cdef:
-        Py_ssize_t n = len(data1)
-        Py_ssize_t i
-        double* arr1
-        double* arr2 = NULL
-        double* result_arr
-        double scalar
-        list result_list = []
-        bint is_scalar = not isinstance(data2, list)
-    
-    # Allocate arrays
-    arr1 = <double*>malloc(n * sizeof(double))
-    result_arr = <double*>malloc(n * sizeof(double))
-    
-    if not is_scalar:
-        arr2 = <double*>malloc(n * sizeof(double))
-        if not arr2:
-            if arr1: free(arr1)
-            if result_arr: free(result_arr)
-            raise MemoryError("Failed to allocate memory")
-    
-    if not arr1 or not result_arr:
-        if arr1: free(arr1)
-        if arr2: free(arr2)
-        if result_arr: free(result_arr)
-        raise MemoryError("Failed to allocate memory")
-    
-    try:
-        # Copy first array
-        for i in range(n):
-            arr1[i] = <double>data1[i]
+        return result, shape1
+    else:
+        # Fallback for lists
+        n = len(data1)
+        result = []
         
         if is_scalar:
-            # Scalar subtraction
-            scalar = <double>data2
+            scalar = float(data2)
             for i in range(n):
-                result_arr[i] = arr1[i] - scalar
+                result.append(data1[i] * scalar)
         else:
-            # Element-wise subtraction
             for i in range(n):
-                arr2[i] = <double>data2[i]
-            for i in range(n):
-                result_arr[i] = arr1[i] - arr2[i]
+                result.append(data1[i] * data2[i])
         
-        # Copy result back
-        result_list = [result_arr[i] for i in range(n)]
-        
-        return result_list, shape1
-    
-    finally:
-        free(arr1)
-        if arr2: free(arr2)
-        free(result_arr)
+        return result, shape1
 
 
 @cython.boundscheck(False)
@@ -185,104 +154,108 @@ def _subtract_cython(data1, data2, shape1, shape2):
 @cython.cdivision(True)
 def _divide_cython(data1, data2, shape1, shape2):
     """
-    Optimized division without numpy overhead.
-    Uses raw C arrays for maximum performance.
+    Optimized division using typed memoryviews.
     """
     cdef:
-        Py_ssize_t n = len(data1)
-        Py_ssize_t i
-        double* arr1
-        double* arr2 = NULL
-        double* result_arr
-        double scalar
-        list result_list = []
-        bint is_scalar = not isinstance(data2, list)
+        double[:] view1
+        double[:] view2
+        double[:] result_view
+        Py_ssize_t i, n
+        double val1, val2
     
-    # Allocate arrays
-    arr1 = <double*>malloc(n * sizeof(double))
-    result_arr = <double*>malloc(n * sizeof(double))
+    result = None
     
-    if not is_scalar:
-        arr2 = <double*>malloc(n * sizeof(double))
-        if not arr2:
-            if arr1: free(arr1)
-            if result_arr: free(result_arr)
-            raise MemoryError("Failed to allocate memory")
-    
-    if not arr1 or not result_arr:
-        if arr1: free(arr1)
-        if arr2: free(arr2)
-        if result_arr: free(result_arr)
-        raise MemoryError("Failed to allocate memory")
-    
-    try:
-        # Copy first array
+    if isinstance(data1, array.array) and isinstance(data2, array.array):
+        view1 = data1
+        view2 = data2
+        n = len(data1)
+        
+        result = array.array('d', [0.0] * n)
+        result_view = result
+        
+        # Division with zero handling
         for i in range(n):
-            arr1[i] = <double>data1[i]
-        
-        if is_scalar:
-            # Scalar division
-            scalar = <double>data2
-            if scalar == 0:
-                # Handle division by zero
-                for i in range(n):
-                    if arr1[i] > 0:
-                        result_arr[i] = float('inf')
-                    elif arr1[i] < 0:
-                        result_arr[i] = float('-inf')
-                    else:
-                        result_arr[i] = float('nan')
+            val1 = view1[i]
+            val2 = view2[i]
+            if val2 != 0:
+                result_view[i] = val1 / val2
             else:
-                for i in range(n):
-                    result_arr[i] = arr1[i] / scalar
-        else:
-            # Element-wise division
-            for i in range(n):
-                arr2[i] = <double>data2[i]
-            for i in range(n):
-                if arr2[i] == 0:
-                    if arr1[i] > 0:
-                        result_arr[i] = float('inf')
-                    elif arr1[i] < 0:
-                        result_arr[i] = float('-inf')
-                    else:
-                        result_arr[i] = float('nan')
+                if val1 > 0:
+                    result_view[i] = float('inf')
+                elif val1 < 0:
+                    result_view[i] = float('-inf')
                 else:
-                    result_arr[i] = arr1[i] / arr2[i]
+                    result_view[i] = float('nan')
         
-        # Copy result back
-        result_list = [result_arr[i] for i in range(n)]
-        
-        return result_list, shape1
+        return result, shape1
+    else:
+        # Fallback for lists
+        n = len(data1)
+        result = []
+        for i in range(n):
+            if data2[i] != 0:
+                result.append(data1[i] / data2[i])
+            else:
+                if data1[i] > 0:
+                    result.append(float('inf'))
+                elif data1[i] < 0:
+                    result.append(float('-inf'))
+                else:
+                    result.append(float('nan'))
+        return result, shape1
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _sum_cython(data, shape):
+    """
+    Optimized sum reduction using memoryviews.
+    """
+    cdef:
+        double[:] view
+        double total = 0.0
+        Py_ssize_t i, n
     
-    finally:
-        free(arr1)
-        if arr2: free(arr2)
-        free(result_arr)
+    if isinstance(data, array.array):
+        view = data
+        n = len(data)
+        
+        with nogil:
+            for i in range(n):
+                total += view[i]
+        
+        return total
+    else:
+        # Fallback for lists
+        return sum(data)
 
 
-def _floor_divide_cython(data1, data2, shape1, shape2):
-    """Floor division not yet optimized in Cython."""
-    raise NotImplementedError(
-        "floor_divide() not yet implemented in Cython backend.\n"
-        "Available in: python\n"
-        "Switch backends or contribute the implementation!"
-    )
-
-
-def _mod_cython(data1, data2, shape1, shape2):
-    """Modulo not yet optimized in Cython."""
-    raise NotImplementedError(
-        "mod() not yet implemented in Cython backend.\n"
-        "Available in: python\n"
-        "Switch backends or contribute the implementation!"
-    )
-
-
-def _power_cython(data1, data2, shape1, shape2):
-    """Power not yet optimized in Cython."""
-    raise NotImplementedError(
-        "power() not yet implemented in Cython backend.\n"
-        "Available in: python\n"
-        "Switch backends or contribute the implementation!"
-    )
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _mean_cython(data, shape):
+    """
+    Optimized mean calculation using memoryviews.
+    """
+    cdef:
+        double[:] view
+        double total = 0.0
+        Py_ssize_t i, n
+    
+    if isinstance(data, array.array):
+        view = data
+        n = len(data)
+        
+        if n == 0:
+            return float('nan')
+        
+        with nogil:
+            for i in range(n):
+                total += view[i]
+        
+        return total / n
+    else:
+        # Fallback for lists
+        n = len(data)
+        if n == 0:
+            return float('nan')
+        return sum(data) / n
