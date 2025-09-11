@@ -8,36 +8,24 @@ Note: Only a subset of operations are implemented in Cython.
 Operations not implemented here will raise NotImplementedError.
 """
 
-# Try to import the new memoryview-based implementation first
+# Import from the unified array_ops module (formerly array_ops_new)
+from .array_ops import (
+    _add_cython,
+    _subtract_cython,
+    _multiply_cython,
+    _divide_cython,
+    _sum_cython,
+    _mean_cython,
+)
+
+# Import from reduction_ops if sum is not in array_ops
 try:
-    from .array_ops_new import (
-        _add_cython,
-        _subtract_cython,
-        _multiply_cython,
-        _divide_cython,
-        _sum_cython as _sum_cython_new,
-        _mean_cython,
-    )
-    # Use the new implementation
-    _sum_cython = _sum_cython_new
-    USING_NEW_CYTHON = True
-except ImportError:
-    # Fall back to old implementation
-    from .array_ops import (
-        _add_cython,
-        _multiply_cython,
-    )
     from .reduction_ops import (
-        _sum_cython,
+        _sum_cython as _sum_cython_reduction,
     )
-    # Old implementation doesn't have these
-    def _subtract_cython(data1, data2, shape1, shape2):
-        raise NotImplementedError("Subtract not implemented in old Cython backend")
-    def _divide_cython(data1, data2, shape1, shape2):
-        raise NotImplementedError("Divide not implemented in old Cython backend")
-    def _mean_cython(data, shape):
-        raise NotImplementedError("Mean not implemented in old Cython backend")
-    USING_NEW_CYTHON = False
+    # If both exist, prefer array_ops version
+except ImportError:
+    pass
 
 # Always import these from old modules if available
 try:
@@ -65,5 +53,4 @@ __all__ = [
     '_sum_cython',
     '_mean_cython',
     '_sqrt_cython',
-    'USING_NEW_CYTHON',
 ]

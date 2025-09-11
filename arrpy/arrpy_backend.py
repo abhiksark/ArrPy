@@ -530,6 +530,179 @@ class ArrPy:
         return result
     
     # ============================================================
+    # Indexing and slicing
+    # ============================================================
+    
+    def __getitem__(self, key):
+        """Get item(s) from array using indexing."""
+        # Handle single integer index for 1D arrays
+        if isinstance(key, int):
+            if self.ndim == 1:
+                # Handle negative indexing
+                if key < 0:
+                    key = self._size + key
+                if key < 0 or key >= self._size:
+                    raise IndexError(f"Index {key} out of bounds for array of size {self._size}")
+                return self._data[key]
+            else:
+                # For multi-dimensional arrays, integer index selects a sub-array
+                raise NotImplementedError("Integer indexing for multi-dimensional arrays not yet implemented")
+        
+        # Handle tuple of indices for multi-dimensional arrays
+        if isinstance(key, tuple):
+            if self.ndim == 1:
+                raise IndexError("Too many indices for 1D array")
+            
+            # Convert multi-dimensional index to flat index
+            if len(key) != self.ndim:
+                raise IndexError(f"Expected {self.ndim} indices, got {len(key)}")
+            
+            # Calculate flat index from multi-dimensional indices
+            flat_idx = 0
+            for i, (idx, dim_size) in enumerate(zip(key, self._shape)):
+                if isinstance(idx, int):
+                    # Handle negative indexing
+                    if idx < 0:
+                        idx = dim_size + idx
+                    if idx < 0 or idx >= dim_size:
+                        raise IndexError(f"Index {idx} out of bounds for axis {i} with size {dim_size}")
+                    
+                    # Calculate offset for this dimension
+                    stride = 1
+                    for j in range(i + 1, self.ndim):
+                        stride *= self._shape[j]
+                    flat_idx += idx * stride
+                else:
+                    raise NotImplementedError("Only integer indexing currently supported")
+            
+            return self._data[flat_idx]
+        
+        # Handle slicing for 1D arrays
+        if isinstance(key, slice):
+            if self.ndim != 1:
+                raise NotImplementedError("Slicing for multi-dimensional arrays not yet implemented")
+            
+            # Get slice indices
+            start, stop, step = key.indices(self._size)
+            
+            # Extract sliced data
+            sliced_data = self._data[start:stop:step]
+            
+            # Create new array with sliced data
+            from .creation import array
+            return array(list(sliced_data))
+        
+        # Handle boolean array indexing
+        if isinstance(key, ArrPy):
+            from .dtype import bool_
+            if key._dtype == bool_:
+                from .indexing import boolean_index
+                return boolean_index(self, key)
+            else:
+                # Fancy indexing with integer array
+                from .indexing import fancy_index
+                return fancy_index(self, key)
+        
+        # Handle list of indices (fancy indexing)
+        if isinstance(key, (list, tuple)) and all(isinstance(i, int) for i in key):
+            from .indexing import fancy_index
+            from .creation import array
+            return fancy_index(self, array(key))
+        
+        raise TypeError(f"Invalid index type: {type(key)}")
+    
+    def __setitem__(self, key, value):
+        """Set item(s) in array using indexing."""
+        # Handle single integer index for 1D arrays
+        if isinstance(key, int):
+            if self.ndim == 1:
+                # Handle negative indexing
+                if key < 0:
+                    key = self._size + key
+                if key < 0 or key >= self._size:
+                    raise IndexError(f"Index {key} out of bounds for array of size {self._size}")
+                self._data[key] = value
+                return
+            else:
+                raise NotImplementedError("Integer indexing for multi-dimensional arrays not yet implemented")
+        
+        # Handle tuple of indices for multi-dimensional arrays
+        if isinstance(key, tuple):
+            if self.ndim == 1:
+                raise IndexError("Too many indices for 1D array")
+            
+            # Convert multi-dimensional index to flat index
+            if len(key) != self.ndim:
+                raise IndexError(f"Expected {self.ndim} indices, got {len(key)}")
+            
+            # Calculate flat index from multi-dimensional indices
+            flat_idx = 0
+            for i, (idx, dim_size) in enumerate(zip(key, self._shape)):
+                if isinstance(idx, int):
+                    # Handle negative indexing
+                    if idx < 0:
+                        idx = dim_size + idx
+                    if idx < 0 or idx >= dim_size:
+                        raise IndexError(f"Index {idx} out of bounds for axis {i} with size {dim_size}")
+                    
+                    # Calculate offset for this dimension
+                    stride = 1
+                    for j in range(i + 1, self.ndim):
+                        stride *= self._shape[j]
+                    flat_idx += idx * stride
+                else:
+                    raise NotImplementedError("Only integer indexing currently supported")
+            
+            self._data[flat_idx] = value
+            return
+        
+        # Handle slicing for 1D arrays
+        if isinstance(key, slice):
+            if self.ndim != 1:
+                raise NotImplementedError("Slicing for multi-dimensional arrays not yet implemented")
+            
+            # Get slice indices
+            start, stop, step = key.indices(self._size)
+            
+            # Convert value to list if it's an array
+            if isinstance(value, ArrPy):
+                value = list(value._data)
+            elif not isinstance(value, (list, tuple)):
+                # Broadcast single value
+                value = [value] * len(range(start, stop, step))
+            
+            # Set sliced data
+            for i, idx in enumerate(range(start, stop, step)):
+                self._data[idx] = value[i] if i < len(value) else value[-1]
+            return
+        
+        # Handle boolean array indexing
+        if isinstance(key, ArrPy):
+            from .dtype import bool_
+            if key._dtype == bool_:
+                # Boolean indexing - set values where mask is True
+                if key._size != self._size:
+                    raise ValueError("Boolean index size must match array size")
+                
+                # Convert value to list if needed
+                if isinstance(value, ArrPy):
+                    value_list = list(value._data)
+                elif not isinstance(value, (list, tuple)):
+                    value_list = [value]
+                else:
+                    value_list = value
+                
+                # Set values where mask is True
+                value_idx = 0
+                for i in range(self._size):
+                    if key._data[i]:
+                        self._data[i] = value_list[value_idx % len(value_list)]
+                        value_idx += 1
+                return
+        
+        raise TypeError(f"Invalid index type for setitem: {type(key)}")
+    
+    # ============================================================
     # Reduction methods using backend system
     # ============================================================
     
