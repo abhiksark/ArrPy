@@ -4,8 +4,8 @@
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Backend: 3](https://img.shields.io/badge/backends-3-green.svg)](https://github.com/yourusername/arrpy)
-[![Coverage: 95%](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/yourusername/arrpy)
+[![Backend: 3](https://img.shields.io/badge/backends-3-green.svg)](https://github.com/abhiksark/arrpy)
+[![Coverage: 95%](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/abhiksark/arrpy)
 
 ## 🎯 What is ArrPy?
 
@@ -62,7 +62,7 @@ pip install arrpy
 ### Development Setup
 
 ```bash
-git clone https://github.com/yourusername/arrpy.git
+git clone https://github.com/abhiksark/arrpy.git
 cd arrpy
 make dev  # Installs in development mode with all dependencies
 ```
@@ -235,10 +235,10 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/yourusername/arrpy)
+- [GitHub Repository](https://github.com/abhiksark/arrpy)
 - [Documentation](https://arrpy.readthedocs.io)
 - [PyPI Package](https://pypi.org/project/arrpy)
-- [Issue Tracker](https://github.com/yourusername/arrpy/issues)
+- [Issue Tracker](https://github.com/abhiksark/arrpy/issues)
 
 ---
 
