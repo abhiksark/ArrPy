@@ -3,7 +3,7 @@ name: Tests
 
 on:
   push:
-    branches: [ main, v*.x ]
+    branches: [ main, develop, dev*, v*.x ]
   pull_request:
     branches: [ main ]
 
