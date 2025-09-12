@@ -1,12 +1,10 @@
-# ArrPy Core Requirements
-# Pure Python implementation has minimal dependencies
-
-# Build dependencies
-numpy>=1.20.0    # Required for Cython extensions and comparisons
-cython>=0.29.0   # For building Cython extensions
-
-# Utility dependencies
-tabulate>=0.9.0  # For feature matrix display
-
-# Development dependencies (optional)
-# Install with: pip install -r requirements-dev.txt
+arrpy @ file:///home/anivesh/ArrPy
+Cython==3.1.3
+iniconfig==2.1.0
+numpy==2.3.3
+packaging==25.0
+pluggy==1.6.0
+pybind11==3.0.1
+Pygments==2.19.2
+pytest==8.4.2
+setuptools==80.9.0
