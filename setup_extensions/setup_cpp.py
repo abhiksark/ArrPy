@@ -6,10 +6,12 @@ from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import setup, find_packages
 import pybind11
 import platform
+import subprocess
 
 # Determine compiler flags based on platform
 extra_compile_args = []
 extra_link_args = []
+include_dirs = [pybind11.get_include()]
 
 if platform.system() == "Windows":
     extra_compile_args = ["/O2", "/arch:AVX2"]
@@ -22,11 +24,25 @@ else:
         "-std=c++14",
     ]
     
+    # macOS-specific fixes
+    if platform.system() == "Darwin":
+        try:
+            # Get the SDK path
+            sdk_path = subprocess.check_output(["xcrun", "--show-sdk-path"]).decode().strip()
+            # Add C++ standard library include path
+            include_dirs.append(f"{sdk_path}/usr/include/c++/v1")
+            # Ensure we use the SDK
+            extra_compile_args.extend(["-isysroot", sdk_path])
+            extra_link_args.extend(["-isysroot", sdk_path])
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            # Fallback for older systems or if xcrun is not available
+            pass
+    
     # Try to enable OpenMP if available (mainly for Linux)
     if platform.system() == "Linux":
         extra_compile_args.append("-fopenmp")
         extra_link_args.append("-fopenmp")
-    else:
+    elif platform.system() != "Darwin":
         extra_link_args = []
     
     # Platform-specific optimizations
@@ -49,7 +65,7 @@ ext_modules = [
     Pybind11Extension(
         "arrpy.backends.c.array_ops_cpp",
         ["arrpy/backends/c/array_ops.cpp"],
-        include_dirs=[pybind11.get_include()],
+        include_dirs=include_dirs,
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         cxx_std=14,
@@ -57,7 +73,7 @@ ext_modules = [
     Pybind11Extension(
         "arrpy.backends.c.linalg_ops_cpp",
         ["arrpy/backends/c/linalg_ops.cpp"],
-        include_dirs=[pybind11.get_include()],
+        include_dirs=include_dirs,
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         cxx_std=14,
@@ -65,7 +81,7 @@ ext_modules = [
     Pybind11Extension(
         "arrpy.backends.c.reduction_ops_cpp",
         ["arrpy/backends/c/reduction_ops.cpp"],
-        include_dirs=[pybind11.get_include()],
+        include_dirs=include_dirs,
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         cxx_std=14,
@@ -73,7 +89,7 @@ ext_modules = [
     Pybind11Extension(
         "arrpy.backends.c.ufuncs_ops_cpp",
         ["arrpy/backends/c/ufuncs_ops.cpp"],
-        include_dirs=[pybind11.get_include()],
+        include_dirs=include_dirs,
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         cxx_std=14,
