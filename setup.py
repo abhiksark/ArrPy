@@ -43,13 +43,7 @@ if USE_CYTHON:
             extra_compile_args=["-O3"],  # Removed -ffast-math to avoid vectorization issues
             libraries=["m"],  # Link with math library
         ),
-        # Experimental modules (only compile standalone modules)
-        Extension(
-            "arrpy.backends.cython.experimental.typed_ops",
-            ["arrpy/backends/cython/experimental/typed_ops.pyx"],
-            include_dirs=[np.get_include()],
-            extra_compile_args=["-O3", "-ffast-math"],
-        ),
+        # Note: Experimental modules have been moved to experimental_archive
     ]
     ext_modules = cythonize(
         extensions,

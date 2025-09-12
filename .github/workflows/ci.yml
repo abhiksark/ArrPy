@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop, v*.x ]
+    branches: [ '**' ]  # Trigger on all branches
   pull_request:
     branches: [ main ]
   schedule:
@@ -58,7 +58,7 @@ jobs:
       env:
         ARRPY_BACKEND: ${{ matrix.backend }}
       run: |
-        pytest tests/ --ignore=tests/experimental -v --tb=short
+        pytest tests/ --ignore=tests/experimental --ignore=tests/experimental_archive -v --tb=short
     
     - name: Test imports
       run: |
@@ -89,7 +89,7 @@ jobs:
     
     - name: Run quick tests
       run: |
-        ARRPY_BACKEND=python pytest tests/ --ignore=tests/experimental -q --tb=no
+        ARRPY_BACKEND=python pytest tests/ --ignore=tests/experimental --ignore=tests/experimental_archive -q --tb=no
     
     - name: Check feature matrix
       run: |

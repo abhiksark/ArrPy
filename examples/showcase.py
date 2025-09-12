@@ -50,6 +50,7 @@ def showcase_backend_switching():
 def showcase_array_creation():
     """Demonstrate various array creation methods."""
     print_section("Array Creation")
+    set_backend('python')  # Use Python backend for reliability
     
     # Basic creation
     a = arrpy.array([1, 2, 3, 4, 5])
@@ -77,6 +78,7 @@ def showcase_array_creation():
 def showcase_broadcasting():
     """Demonstrate broadcasting capabilities."""
     print_section("Broadcasting")
+    set_backend('python')  # Use Python backend for reliability
     
     # Scalar broadcasting
     a = arrpy.array([[1, 2, 3], [4, 5, 6]])

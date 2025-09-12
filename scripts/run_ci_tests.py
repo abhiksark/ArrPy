@@ -52,7 +52,7 @@ def main():
     
     # Test 4: Run pytest on core tests (not experimental)
     all_passed &= run_command(
-        "python -m pytest tests/ --ignore=tests/experimental -q --tb=no",
+        "python -m pytest tests/ --ignore=tests/experimental --ignore=tests/experimental_archive -q --tb=no",
         "Core Test Suite"
     )
     
